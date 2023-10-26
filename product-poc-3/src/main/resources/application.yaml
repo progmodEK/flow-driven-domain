@@ -1,0 +1,53 @@
+spring:
+
+  r2dbc:
+    url: r2dbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    properties:
+      schema: checkout
+      enableSSL: false
+#      sslMode: ${DATABASE_SSL_MODE:disable}
+#      sslRootCert: ${DATABASE_SSL_ROOT_CERT}
+      preparedStatementCacheQueries: ${PREPARED_STATEMENT_CACHE_VALUE:-1}
+
+    pool:
+      enabled: ${SPRING_R2DBC_POOL_ENABLED:true}
+      initialSize: ${SPRING_R2DBC_POOL_INITIAL_SIZE:10}
+      maxSize: ${SPRING_R2DBC_POOL_MAX_SIZE:10}
+
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0.0
+    locations: [ 'classpath:db/migration' ]
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    schemas: [ 'checkout' ]
+    user: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+    jackson:
+      property-naming-strategy: SNAKE_CASE
+      default-property-inclusion: NON_NULL
+
+application:
+  features:
+    file: /features/features.properties
+
+flow:
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    ssl: ${REDIS_SSL:true}
+    userName: ${REDIS_USERNAME}
+    password: ${REDIS_PASSWORD}
+    timeout: ${REDIS_READ_TIMEOUT:10000}
+    database: ${REDIS_DATABASE:2}
+    databaseTwo: ${REDIS_DATABASE_TWO:1}
+    databaseThree: ${REDIS_DATABASE_THREE:-1}
+
+logging:
+  level:
+    io.lettuce.core.protocol.ReconnectionHandler: WARN
+    io.lettuce.core.protocol.ConnectionWatchdog: WARN

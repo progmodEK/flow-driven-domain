@@ -1,0 +1,121 @@
+{
+  "actions": [
+    {
+      "name": "CHECK_INV",
+      "delegate": "checkInventoryDelegate"
+    },
+    {
+      "name": "DEBIT",
+      "delegate": "debitDelegate"
+    },
+    {
+      "name": "CANCEL",
+      "delegate": "cancelDelegate"
+    },
+    {
+      "name": "SHIP",
+      "delegate": "shipDelegate"
+    },
+    {
+      "name": "DELIVER",
+      "delegate": "deliverDelegate"
+    },
+    {
+      "name": "NOTIFY",
+      "delegate": "notifyDelegate"
+    }
+  ],
+  "states": [
+    {
+      "name": "NEW",
+      "initial": true,
+      "transitions": [
+        {
+          "action": "CHECK_INV",
+          "result": {
+            "inventoryOK": "P_DEBIT",
+            "inventoryKO": "P_CANCEL"
+          },
+          "retry": {
+            "number": 3,
+            "exceeded": "P_CANCEL"
+          },
+          "timer": {
+            "sec": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "P_DEBIT",
+      "transitions": [
+        {
+          "action": "DEBIT",
+          "result": {
+            "success": "P_SHIPMENT"
+          },
+          "timer": {
+            "sec": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "P_SHIPMENT",
+      "transitions": [
+        {
+          "action": "SHIP",
+          "result": {
+            "success": "SHIPPED"
+          }
+        }
+      ]
+    },
+    {
+      "name": "P_CANCEL",
+      "transitions": [
+        {
+          "action": "CANCEL",
+          "result": {
+            "success": "CANCELLED"
+          },
+          "timer": {
+            "sec": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "SHIPPED",
+      "transitions": [
+        {
+          "action": "DELIVER",
+          "result": {
+            "success": "DELIVERED"
+          }
+        },
+        {
+          "action": "NOTIFY",
+          "result": {
+            "success": "DELIVERY_UNKNOWN"
+          },
+          "timer": {
+            "sec": 60
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELIVERED",
+      "transitions": []
+    },
+    {
+      "name": "CANCELLED",
+      "transitions": []
+    },
+    {
+      "name": "DELIVERY_UNKNOWN",
+      "transitions": []
+    }
+  ]
+}

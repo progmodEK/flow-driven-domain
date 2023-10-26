@@ -1,0 +1,46 @@
+ext {
+    aspectj_version = "1.9.19"
+    cloud_events_version = "2.5.0"
+    commons_beanutils_version = "1.9.4"
+    commons_collections4_version = "4.4"
+    commons_lang3_version = "3.0"
+    gcp_logging_version = "4.7.1"
+    commons_io_version = "2.13.0"
+    java_jwt_version = "4.4.0"
+    jwks_rsa_version = "0.22.1"
+    mapstruct_version = "1.5.5.Final"
+    mockito_inline_version = "5.2.0"
+    mockserver_netty_version = "5.15.0"
+    resilience4j_version = "2.1.0"
+    springfox_boot_starter_version = "3.0.0"
+    springdoc_openapi_version = "2.1.0"
+    vavr_version = "0.10.3"
+    swagger_core_version = "2.2.15"
+    xml_bind_api_version = "2.3.3"
+    guava_retrying= "2.0.0"
+
+    supportDependencies = [
+            aspectjrt                   : "org.aspectj:aspectjrt:$aspectj_version",
+            aspectjweaver               : "org.aspectj:aspectjweaver:$aspectj_version",
+            cloudevents_json_jackson    : "io.cloudevents:cloudevents-json-jackson:$cloud_events_version",
+            cloudevents_kafka           : "io.cloudevents:cloudevents-kafka:$cloud_events_version",
+            commons_io                  : "commons-io:commons-io:$commons_io_version",
+            commons_collections4        : "org.apache.commons:commons-collections4:$commons_collections4_version",
+            commons_lang3               : "org.apache.commons:commons-lang3:$commons_lang3_version",
+            commons_beanutils           : "commons-beanutils:commons-beanutils:$commons_beanutils_version",
+            java_jwt                    : "com.auth0:java-jwt:$java_jwt_version",
+            jwks_rsa                    : "com.auth0:jwks-rsa:$jwks_rsa_version",
+            mapstruct                   : "org.mapstruct:mapstruct:$mapstruct_version",
+            mapstruct_processor         : "org.mapstruct:mapstruct-processor:$mapstruct_version",
+            mockito_inline              : "org.mockito:mockito-inline:$mockito_inline_version",
+            mockserver_netty            : "org.mock-server:mockserver-netty:$mockserver_netty_version",
+            resilience4j_reactor        : "io.github.resilience4j:resilience4j-reactor:$resilience4j_version",
+            resilience4j_spring_boot2   : "io.github.resilience4j:resilience4j-spring-boot3:$resilience4j_version",
+            spring_cloud_gcp_logging    : "com.google.cloud:spring-cloud-gcp-logging:$gcp_logging_version",
+            springdoc_openapi_webflux_ui: "org.springdoc:springdoc-openapi-starter-webflux-ui:$springdoc_openapi_version",
+            swagger_core                : "io.swagger.core.v3:swagger-core:$swagger_core_version",
+            vavr                        : "io.vavr:vavr:$vavr_version",
+            xml_bind_api                : "jakarta.xml.bind:jakarta.xml.bind-api:$xml_bind_api_version",
+            guava_retrying              : "com.github.rholder:guava-retrying:$guava_retrying"
+    ]
+}

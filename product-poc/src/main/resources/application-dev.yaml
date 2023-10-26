@@ -1,0 +1,43 @@
+#logging:
+#  level:
+#    org.springframework.r2dbc: DEBUG
+#    org.springframework.web: DEBUG
+#    org.springframework.boot.autoconfigure: DEBUG
+#debug: true
+server:
+  port: 8081
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/postgres?currentSchema=checkout
+    username: admin
+    password: admin
+    properties:
+      enableSSL: false
+      sslMode: disable
+    pool:
+      enabled: false
+
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0.0
+    locations: [ 'classpath:db/migration' ]
+    url: jdbc:postgresql://localhost:5432/postgres
+    schemas: [ 'checkout' ]
+    user: "admin"
+    password: "admin"
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+flow:
+  actionLogger:
+    enabled: true
+  taskConsumer:
+    scheduleMilli: 1000
+  lockService:
+    removeBlockedLockScheduleMilli: 10000
+
