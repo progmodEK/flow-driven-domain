@@ -1,25 +1,5 @@
 plugins {
-    id 'poc.boot-app'
-}
-
-group "com.progmod.poc"
-version "0.0.1-SNAPSHOT"
-
-ext {
-    gprUser = 'maven'
-    gprKey = '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'
-}
-
-repositories {
-    mavenCentral()
-    // mavenLocal()
-    maven {
-        url = uri("https://maven.pkg.github.com/progmodEK/flow-domain-engine")
-        credentials {
-            username = project.findProperty("gprUser")
-            password = project.findProperty("gprKey")
-        }
-    }
+    id 'poc.reactive.boot.app'
 }
 
 dependencies {

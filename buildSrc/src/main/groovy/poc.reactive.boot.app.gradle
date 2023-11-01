@@ -21,11 +21,21 @@ dependencies {
     }
 }
 
-sourceCompatibility = 17
+group "com.progmod.poc"
+version "0.0.1-SNAPSHOT"
 
+sourceCompatibility = 17
 
 repositories {
     mavenCentral()
+    // mavenLocal()
+    maven {
+        url = uri("https://maven.pkg.github.com/progmodEK/fdd-maven-repo")
+        credentials {
+            username = project.findProperty("gpr.user")
+            password = project.findProperty("gpr.key")
+        }
+    }
 }
 
 test {

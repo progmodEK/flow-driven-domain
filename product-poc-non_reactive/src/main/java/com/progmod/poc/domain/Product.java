@@ -1,7 +1,5 @@
 package com.progmod.poc.domain;
 
-import com.progmod.flow.domain.model.Flow;
-import com.progmod.flow.domain.model.Flowable;
 import com.progmod.poc.repository.CustomJacksonJsonConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

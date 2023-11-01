@@ -28,25 +28,18 @@ tasks.named("compileJava") {
 
 repositories {
     mavenCentral()
-    mavenLocal()
-
-    // to test the  FLOW LIBRARY
-    flatDir {
-        dirs "${rootProject.projectDir}/flow/build/libs"
+    // mavenLocal()
+    maven {
+        url = uri("https://maven.pkg.github.com/progmodEK/fdd-maven-repo")
+        credentials {
+            username = project.findProperty("gpr.user")
+            password = project.findProperty("gpr.key")
+        }
     }
 }
 
 dependencies {
-    // Internal module dependencies
-//    implementation project(":flow-common")
-//    implementation project(":flow")
-
     implementation "com.progmod:flow:1.0.0"
-
-//    implementation name: 'flow-0.0.1-SNAPSHOT'
-
-//    implementation files("${rootProject.projectDir}/flow/build/libs/flow-0.0.1-SNAPSHOT.jar")
-
 
     // ------------------------
     // Application Dependencies
