@@ -234,7 +234,7 @@ Define an ActionDelegate for each Action, these delegate will have the process l
     
     }
 
-### Step3
+### Step4
 
 Instantiate a FlowEngine (the library flow engine) by passing it your Domain repository 
 
@@ -262,7 +262,7 @@ or
     
     }
 
-### Step4
+### Step5
 
 Watch your domain becomes flowable:
 
