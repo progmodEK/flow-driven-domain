@@ -2,11 +2,11 @@ package com.progmod.poc.infra;
 
 import com.progmod.flow.domain.model.Flowable;
 import com.progmod.flow.domain.port.EventsPublisher;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
-@Log4j2
+@Slf4j
 public class KafkaEventPublisher implements EventsPublisher {
   @Override
   public void publishEvents(final Flowable flow) {
