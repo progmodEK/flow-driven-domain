@@ -5,12 +5,12 @@
       "delegate": "checkInventoryDelegate"
     },
     {
-      "name": "DEBIT",
-      "delegate": "debitDelegate"
+      "name": "RECHECK_INV",
+      "delegate": "checkInventoryDelegate"
     },
     {
-      "name": "CANCEL",
-      "delegate": "cancelDelegate"
+      "name": "DEBIT",
+      "delegate": "debitDelegate"
     },
     {
       "name": "SHIP",
@@ -34,14 +34,29 @@
           "action": "CHECK_INV",
           "result": {
             "inventoryOK": "P_DEBIT",
-            "inventoryKO": "P_CANCEL"
-          },
-          "retry": {
-            "number": 3,
-            "exceeded": "P_CANCEL"
+            "inventoryKO": "P_INVENTORY"
           },
           "timer": {
             "sec": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "P_INVENTORY",
+      "transitions": [
+        {
+          "action": "RECHECK_INV",
+          "result": {
+            "inventoryOK": "P_DEBIT",
+            "inventoryKO": "P_INVENTORY"
+          },
+          "retry": {
+            "number": 3,
+            "exceeded": "CANCELLED"
+          },
+          "timer": {
+            "sec": 5
           }
         }
       ]
@@ -52,7 +67,12 @@
         {
           "action": "DEBIT",
           "result": {
-            "success": "P_SHIPMENT"
+            "success": "P_SHIPMENT",
+            "error": "CANCELLED"
+          },
+          "retry": {
+            "number": 3,
+            "exceeded": "CANCELLED"
           },
           "timer": {
             "sec": 0
@@ -67,20 +87,6 @@
           "action": "SHIP",
           "result": {
             "success": "SHIPPED"
-          }
-        }
-      ]
-    },
-    {
-      "name": "P_CANCEL",
-      "transitions": [
-        {
-          "action": "CANCEL",
-          "result": {
-            "success": "CANCELLED"
-          },
-          "timer": {
-            "sec": 0
           }
         }
       ]

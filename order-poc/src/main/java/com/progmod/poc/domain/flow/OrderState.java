@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 public enum OrderState implements FlowState {
   NEW,
+  P_INVENTORY,
   P_DEBIT,
   P_SHIPMENT,
   P_CANCEL,

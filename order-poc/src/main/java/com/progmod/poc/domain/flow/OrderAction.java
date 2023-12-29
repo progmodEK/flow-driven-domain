@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OrderAction implements FlowAction {
   CHECK_INV(SYSTEM),
+  RECHECK_INV(SYSTEM),
   DEBIT(SYSTEM),
-  CANCEL(SYSTEM),
   SHIP(USER),
   DELIVER(USER),
   NOTIFY(SYSTEM);
