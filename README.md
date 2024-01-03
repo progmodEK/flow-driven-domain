@@ -1,12 +1,19 @@
-# Flow Driven Domain: <em>make your domain flowable</em>
-The library transform your Domain into a **process-centric domain**.<br>
-It means that it allows you to send **ACTION** to your domain, put **rules** over these action's **transitions**,
-and code logic over each Action in a **seperate delegate** Class.<br>
+# Flow Driven Domain
+
+Transform your Domain into a **process-centric domain**.<br>
+The library enables you to send **actions** to your domain, put **rules** over these action's **transitions**,
+and code logic over each action in a **seperate delegate** Class.<br>
 Your domain will have a **State** property and will have a **Flow** property containing the actions history (the process view).
 
-> The library is available in
+Two main purposes (2 points of vue):
+-  **<em>make your domain flowable</em>**
+-  **<em>develop your domain as a process</em>**
+
+> Available in
 > - **reactive** functional programming (spring reactor) mode
 > - **normal** mode (imperative programming)
+
+<br>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -27,8 +34,15 @@ Your domain will have a **State** property and will have a **Flow** property con
     - [Invoke Actions](#invoke-actions)
   - [Step8 - Listen and publish flow events](#step8---listen-and-publish-flow-events)
 - [Library DDD Design](#library-ddd-design)
-- [POC](#poc)
-- [POC Reactive](#poc-reactive)
+- [Flow Functionalities](#flow-functionalities)
+  - [action](#action)
+  - [state](#state)
+  - [transition](#transition)
+- [Advantages](#advantages)
+- [Use Cases](#use-cases)
+- [POC: Order Preparation](#poc-order-preparation)
+- [POC: Reactive version](#poc-reactive-version)
+- [Genesis and Achievement: Decathlon success story](#genesis-and-achievement-decathlon-success-story)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -322,18 +336,56 @@ public interface DomainRepository extends JpaRepository<Greeting, UUID>, FlowRep
 }
 ```
 
+> the Library includes a Base FlowRepository implementation in case you are using postgres jsonb
+> so you can use it to define your domain repository as follow:
+```java
+@Bean
+public FlowRepository<Greeting, UUID> greetingPostGresRepository() {
+        return new BaseR2dbcPostgresJsonRepository<>(Greeting.class)
+        .setTableInfo(table_name, jsonb_column);
+        }
+```
+
+#### Create Your Domain DB table
+
+> the **Flow** property should always be in JSON format
+> Best Practice: use JSONB if you are using postgres
+
+Following are some example using postgres JSONB<br>
+If you are using JSONB for all your aggregate, your table would be
+```roomsql
+CREATE TABLE IF NOT EXISTS greeting (
+  id uuid NOT NULL,
+  greeting_data jsonb NOT NULL,
+  CONSTRAINT flow_pk PRIMARY KEY (id)
+);
+```
+
+If you are using JSONB only for the **Flow** property of your aggregate, your table would be
+```roomsql
+CREATE TABLE IF NOT EXISTS greeting (
+  id uuid NOT NULL,
+  message varchar NOT NULL,
+  flow_data jsonb NOT NULL,
+  CONSTRAINT flow_pk PRIMARY KEY (id)
+);
+```
+
+> you can off course use a DB other than postgresql
+
 #### Create the Tasks Table
 create a table where scheduled tasks will be saved (flow capabilities like timeouts or other scheduled automatic tasks)
+ex for postgres
 ```roomsql
 CREATE TABLE IF NOT EXISTS flow_task (
-    id VARCHAR(255) NOT NULL,
-    score BIGINT NOT NULL,
+    id varchar NOT NULL,
+    score int8 NOT NULL,
     status VARCHAR(255) NOT NULL,
     ver INTEGER NOT NULL,
     PRIMARY KEY (id)
 );
 ```
-> Replace the types by your specific database types (ex for postgres il will be varchar, int8, int4)
+> Replace the types by your specific database types (ex VARCHAR(255), BIGINT, INTEGER)
 
 ### Step6 - Create the FlowEngine
 
@@ -427,38 +479,100 @@ The library follows DDD principles.<br>
 
 ## Flow Functionalities
 
-In the Hello World example, we saw some features of the flow (flow.json).<br>
+We saw in HelloWorld example some features of the **flow.json** when defining actions, states and transitions.<br>
 Here is a List of most of the features and how to use them
 
-### ACTION part
+### action
 
-we can use these properties on an actin defnied in the JSON file
- - delegate = the spring bean (implementation of an ActionDelegate) that will be invoked 
- - expiration : ture/false(default)  to tell the system that this Action will be used to compute "expiredAt" 
+we can use these properties on each **action** defined in the **JSON** file
+ - **delegate**: the spring bean (implementation of an ActionDelegate) that will be invoked 
+ - **expiration**: ture/false(default) used to compute **expiredAt** functionality (inside the **flow** property of the aggregate) 
 
-### STATE part
+```json
+{
+  "name": "TIMEOUT",
+  "delegate": "timeoutDelegate",
+  "expiration": true
+}
+```
 
-we can use these properties on an actin defnied in the JSON file
-- initial : ture/false(default) to indicate that it will be the INITIAL state of the aggregate<br>
-Remember that this is how we make the aggregate flowable
+### state
+
+we can use these properties on each **state** defined in the **JSON** file
+- **initial**: ture/false(default) to indicate that it will be the INITIAL state of the aggregate<br>
+Remember how we make the aggregate flowable
 ```java
 Greeting greeting = 'create your Aggragte'
 flowEngine.makeFlowable(greeting, ProductflowType.DEFAULT, Map.of());
 ```
 
-### TRANSITION part
+```json
+{
+  "name": "INITIAL",
+  "initial": true,
+}
+```
 
-we can use these properties on an actin defnied in the JSON file
-- internal: indicates that the transition is internal, means the state will stay the same
-- dependsOn : indicates that the transition depends on a preceding action. normally used with "internal" transtions
+### transition
+
+we can use these properties on each **transition** defined in the **JSON** file
+- **internal**: indicates that the transition is internal, means the state will remains the same
+- **dependsOn**: indicates that the transition depends on a preceding action. normally used with **internal** transitions
               ex: if we have 3 internal transition with A1,A2 and A3, we can say that the 2nd transition using A2  dependsOn A1
-- result: this String based map indicates where to transit based on fucntional results
-- timer: indeicates that the will be automitically executed after x sec
-- exceptions: indicates where to transit based on Exception (exception can be launched from action delegates using the DelegateException)
-- retry: number of retries (in case of exceptions) before transiting to another state
+- **result**: this String based map indicates where to transit based on functional results
+- **timer**: indicates that the action will be automatically executed after x sec
+- **exceptions**: indicates where to transit based on exceptions (exceptions can be launched from action delegates using the **DelegateException**)
+- **retry**: number of retries (in case of exceptions) before transiting to another state
+
+```json
+"transitions": [
+  {
+    "action": "APPROVE",
+    "result": {
+      "success": "APPROVED",
+      "error": "NOT_APPROVED"
+    },
+    "exceptions": {
+      "001": "PENDING_APPROVAL"
+    },
+    "retry": {
+      "number": 3,
+      "exceeded": "NOT_APPROVED"
+    },
+    "timer": {
+      "sec": 30
+    }
+  }
+]
+```
+
+> **APPROVE** action will be launched in **30sec** (**timer**)<br>
+> if the **functional** result (fom the actionDelegate) is **success** then transit to **APPROVED**<br>
+> If the **functional** result (fom the actionDelegate) is **error** then transit to **NOT_APPROVED**<br>
+> if an **exception** is thrown (**technical** exception from the delegate) then transit to **PENDING_APPROVAL**<br>
+> in case of other *$exceptions** (not handled by the exceptions part) occurred then stay in same state, but after **3 retries**  transit to **NOT_APPROVED**<br>
 
 
-## POC
+## Advantages
 
-## POC Reactive
+logging, monitoring, objects in your Domain (vs variables in BPMs), etc..
+
+## Use Cases
+
+checkout, order preparation, etc..
+
+## POC: Order Preparation
+
+## POC: Reactive version
+
+## Genesis and Achievement: Decathlon success story
+
+The foundational **concept of the library** was originally crafted for **Decathlon**.<br>
+It was specifically tailored to address their **checkout process** needs and challenges.<br>
+
+This concept, a testament to our innovative approach, has been successfully implemented within Decathlon, demonstrating its effectiveness and reliability in a real-world, enterprise environment.<br>
+
+Building on this initial success, the concept was further evolved into a full-fledged library,
+guided by principles of Domain-Driven Design (DDD), ensuring a robust and scalable architecture.
+
 
