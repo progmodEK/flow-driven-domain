@@ -1,8 +1,0 @@
-plugins {
-    id 'poc.reactive.boot.app'
-}
-
-dependencies {
-    implementation "com.progmod:flow-reactive:1.0.0"
-}
-

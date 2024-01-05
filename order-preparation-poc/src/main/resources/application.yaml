@@ -1,0 +1,68 @@
+#logging:
+#  level:
+#    org.springframework.jdbc.core: DEBUG
+#    org.springframework.jdbc.datasource: DEBUG
+#    org.springframework.transaction: TRACE
+#    org.springframework.jdbc.support.JdbcTransactionManager: TRACE
+#    org.springframework.orm.jpa: TRACE
+#    org.springframework.r2dbc: DEBUG
+#    org.springframework.web: DEBUG
+#    org.springframework.boot.autoconfigure: DEBUG
+#debug: true
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=poc
+    username: admin
+    password: admin
+    properties:
+      enableSSL: false
+      sslMode: disable
+    pool:
+      enabled: false
+#  jpa:
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        type:
+#        #          json_format_mapper: com.progmod.poc.repository.CustomJacksonJsonFormatMapper
+#        ddl-auto: update
+#    show-sql: true
+
+
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0.0
+    locations: [ 'classpath:db/migration' ]
+    url: jdbc:postgresql://localhost:5432/postgres
+    schemas: [ 'checkout' ]
+    user: "admin"
+    password: "admin"
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  redis:
+    url: redis://default:password@localhost:6379
+    connect-timeout: 10000
+    timeout: 10000
+    database: 1
+
+flow:
+  actionLogger:
+    enabled: true
+  taskConsumer:
+    scheduleMilli: 1000
+  lockService:
+    removeBlockedLockScheduleMilli: 10000
+
+
+
+
+
+

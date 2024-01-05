@@ -27,6 +27,7 @@ Two main purposes (2 points of vue):
   - [Step4 - Implement delegates defined in flow.json](#step4---implement-delegates-defined-in-flowjson)
   - [Step5 - Your domain Repository and your DataBase](#step5---your-domain-repository-and-your-database)
     - [Implements the FlowRepository interface](#implements-the-flowrepository-interface)
+    - [Create Your Domain DB table](#create-your-domain-db-table)
     - [Create the Tasks Table](#create-the-tasks-table)
   - [Step6 - Create the FlowEngine](#step6---create-the-flowengine)
   - [Step7 - Make your domain flowable](#step7---make-your-domain-flowable)
@@ -234,6 +235,18 @@ means that while in **PENDING_COMPLETION** state, if no **WORLD** action is call
 
 Let your Domain Aggregate Implement the Flowable Interface
 ```java
+public interface Flowable<ID> {
+  ID getId();
+  String getState();
+  void setState(String state);
+  Flow getFlow();
+  void setFlow(Flow flow);
+}
+```
+> so to implement this interface you only need to have an Id, State and Flow properties with their getters/setters
+
+so the greeting becomes:
+```java
 @Data
 public class Greeting implements Flowable<UUID> {
     private UUID id;
@@ -258,7 +271,7 @@ public class Greeting implements Flowable<UUID> {
 ```
 > **NB**: you have to persist these property in your repository<br>
   if you are using NOSQL it will be straight forward,<br>
-  if not consider persisting Flow property as a String or Json
+  if not you must persist Flow property as json or jsonb
 
 ### Step4 - Implement delegates defined in flow.json
 
@@ -291,7 +304,7 @@ public class WorldDelegate implements ActionDelegate<Greeting, DelegateParams, G
 }
 
 @Component
-public class TimeoutDelegate implements SystemActionDelegate<Greeting> {
+public class TimeoutDelegate extends SystemActionDelegate<Greeting> {
 
     @Override
     public Greeting execute(final Greeting greeting, final Map<String, Object> variables) {
@@ -308,7 +321,7 @@ public class TimeoutDelegate implements SystemActionDelegate<Greeting> {
 -**I** type is the input that you can pass to the delegate (a request object containing params)<br>
 -**R** type is the return type (in our ex its the aggregate itself, but you can return a response from calling an external api for ex)<br>
 
-> **Note**: for the system action **TIMEOUT" we implements **SystemActionDelegate<T extends Flowable>** cause here we cannot pass input params or return something else cause its invoked by the system
+> **Note**: for the system action **TIMEOUT" we extends **SystemActionDelegate<T extends Flowable>** which is a special implementation of ActionDelegate without input params and the aggregate as return value
 
 
 ### Step5 - Your domain Repository and your DataBase
@@ -519,7 +532,7 @@ we can use these properties on each **transition** defined in the **JSON** file
 - **internal**: indicates that the transition is internal, means the state will remains the same
 - **dependsOn**: indicates that the transition depends on a preceding action. normally used with **internal** transitions
               ex: if we have 3 internal transition with A1,A2 and A3, we can say that the 2nd transition using A2  dependsOn A1
-- **result**: this String based map indicates where to transit based on functional results
+- **result**: this String based map indicates where to transit based on functional results (success, waiting, error, etc..)
 - **timer**: indicates that the action will be automatically executed after x sec
 - **exceptions**: indicates where to transit based on exceptions (exceptions can be launched from action delegates using the **DelegateException**)
 - **retry**: number of retries (in case of exceptions) before transiting to another state
@@ -575,4 +588,4 @@ This concept, a testament to our innovative approach, has been successfully impl
 Building on this initial success, the concept was further evolved into a full-fledged library,
 guided by principles of Domain-Driven Design (DDD), ensuring a robust and scalable architecture.
 
-
+## Other Hints

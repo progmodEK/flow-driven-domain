@@ -1,0 +1,42 @@
+plugins {
+    id "java"
+    id "io.freefair.lombok" version "8.4"
+    id "org.springframework.boot" version "3.1.2"
+    id "io.spring.dependency-management" version "1.1.4"
+}
+
+group "com.progmod.poc"
+version "0.0.1-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    // mavenLocal()
+    maven {
+        url = uri("https://maven.pkg.github.com/progmodEK/fdd-maven-repo")
+        credentials {
+            username = project.findProperty("gpr.user")
+            password = project.findProperty("gpr.key")
+        }
+    }
+}
+
+dependencies {
+
+    // Flow Driven Domain Library
+    implementation "com.progmod:flow-common:1.0.0"
+    implementation "com.progmod:flow:1.0.0"
+
+    //Spring
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    // Postgres
+    implementation "org.postgresql:postgresql"
+
+    //flyway
+    runtimeOnly "org.flywaydb:flyway-core"
+
+}
+
+
+
+
+

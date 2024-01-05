@@ -1,0 +1,103 @@
+{
+  "actions": [
+    {
+      "name": "START_PREPARATION",
+      "delegate": "startPreparationDelegate"
+    },
+    {
+      "name": "PICK_ITEMS",
+      "delegate": "pickItemsDelegate"
+    },
+    {
+      "name": "PICKUP",
+      "delegate": "pickupDelegate"
+    },
+    {
+      "name": "NOTIFY_OM",
+      "delegate": "notifyDelegate"
+    }
+  ],
+  "states": [
+    {
+      "name": "TO_PREPARE",
+      "initial": true,
+      "transitions": [
+        {
+          "action": "START_PREPARATION",
+          "result": {
+            "success": "IN_PREPARATION"
+          }
+        }
+      ]
+    },
+    {
+      "name": "IN_PREPARATION",
+      "transitions": [
+        {
+          "action": "PICK_ITEMS",
+          "result": {
+            "partial": "IN_PREPARATION",
+            "full": "PENDING_PICKUP"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PENDING_PICKUP",
+      "transitions": [
+        {
+          "action": "PICKUP",
+          "result": {
+            "success": "DELIVERED"
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELIVERED",
+      "transitions": [
+        {
+          "action": "NOTIFY_OM",
+          "result": {
+            "success": "COMPLETE"
+          },
+          "exceptions": {
+            "001": "RETRY_NOTIFICATION"
+          },
+          "timer": {
+            "sec": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "RETRY_NOTIFICATION",
+      "transitions": [
+        {
+          "action": "NOTIFY_OM",
+          "result": {
+            "success": "COMPLETE"
+          },
+          "exceptions": {
+            "001": "RETRY_NOTIFICATION"
+          },
+          "retry": {
+            "number": 3,
+            "exceeded": "ERROR"
+          },
+          "timer": {
+            "sec": 10
+          }
+        }
+      ]
+    },
+    {
+      "name": "ERROR",
+      "transitions": []
+    },
+    {
+      "name": "COMPLETE",
+      "transitions": []
+    }
+  ]
+}
