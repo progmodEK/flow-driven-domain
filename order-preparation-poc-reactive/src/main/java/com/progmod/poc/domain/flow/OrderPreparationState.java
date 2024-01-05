@@ -13,6 +13,6 @@ public enum OrderPreparationState implements FlowState {
   PENDING_PICKUP,
   DELIVERED,
   RETRY_NOTIFICATION,
-  COMPLETE,
+  COMPLETED,
   ERROR
 }

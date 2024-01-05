@@ -6,10 +6,10 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
-      PGDATA: /data/postgres
+      PGDATA: ./tools/data/postgres
     volumes:
       - type: bind
-        source: ./data/postgres-data
+        source: ./tools/data/postgres-data
         target: /var/lib/postgresql/data
     ports:
       - "5432:5432"

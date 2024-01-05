@@ -23,7 +23,6 @@ repositories {
 dependencies {
 
     // Flow Driven Domain Library
-    implementation "com.progmod:flow-common:1.0.0"
     implementation "com.progmod:flow:1.0.0"
 
     //Spring

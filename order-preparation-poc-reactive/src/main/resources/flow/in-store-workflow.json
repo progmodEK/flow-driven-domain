@@ -59,7 +59,7 @@
         {
           "action": "NOTIFY_OM",
           "result": {
-            "success": "COMPLETE"
+            "success": "COMPLETED"
           },
           "exceptions": {
             "001": "RETRY_NOTIFICATION"
@@ -76,7 +76,7 @@
         {
           "action": "NOTIFY_OM",
           "result": {
-            "success": "COMPLETE"
+            "success": "COMPLETED"
           },
           "exceptions": {
             "001": "RETRY_NOTIFICATION"
@@ -96,7 +96,7 @@
       "transitions": []
     },
     {
-      "name": "COMPLETE",
+      "name": "COMPLETED",
       "transitions": []
     }
   ]

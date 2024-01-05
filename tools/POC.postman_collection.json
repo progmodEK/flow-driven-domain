@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "84adc205-756a-4275-883f-72a906fcbabc",
+		"name": "Flow Order Preparation POC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29753349"
+	},
+	"item": [
+		{
+			"name": "Create order preparation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"postman.setEnvironmentVariable(\"flow_id\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"orderRef\" : \"orderXYZ\",\n   \"items\": [\n        {\n            \"skuId\": \"123\",\n            \"name\": \"sku123\",\n            \"qty\": 2\n        },\n        {\n            \"skuId\": \"456\",\n            \"name\": \"sku456\",\n            \"qty\": 3\n        }\n   ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start Preparation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/{{flow_id}}/start-preparation",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						"{{flow_id}}",
+						"start-preparation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pick Items",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pickItems\" : [\n        {\n            \"skuId\" : \"123\",\n            \"qty\": 2\n        },\n         {\n            \"skuId\" : \"456\",\n            \"qty\": 3\n        }\n\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/{{flow_id}}/pick-items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						"{{flow_id}}",
+						"pick-items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pickup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/{{flow_id}}/pickup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						"{{flow_id}}",
+						"pickup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Process by Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/{{flow_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						"{{flow_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Processes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Workflow",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\" : \"product1\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Workflow By type",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\" : \"product1\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/pocs/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"pocs",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

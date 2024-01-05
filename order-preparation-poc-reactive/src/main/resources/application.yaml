@@ -1,9 +1,3 @@
-#logging:
-#  level:
-#    org.springframework.r2dbc: DEBUG
-#    org.springframework.web: DEBUG
-#    org.springframework.boot.autoconfigure: DEBUG
-#debug: true
 server:
   port: 8081
 
@@ -12,11 +6,6 @@ spring:
     url: r2dbc:postgresql://localhost:5432/postgres?currentSchema=poc
     username: admin
     password: admin
-    properties:
-      enableSSL: false
-      sslMode: disable
-    pool:
-      enabled: false
 
   flyway:
     enabled: true
@@ -40,6 +29,3 @@ flow:
     scheduleMilli: 1000
   lockService:
     removeBlockedLockScheduleMilli: 10000
-
-
-

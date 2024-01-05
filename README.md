@@ -1,9 +1,10 @@
-# Flow Driven Domain
+![Local Image](./fdd-git.png)
 
 Transform your Domain into a **process-centric domain**.<br>
-The library enables you to send **actions** to your domain, put **rules** over these action's **transitions**,
-and code logic over each action in a **seperate delegate** Class.<br>
-Your domain will have a **State** property and will have a **Flow** property containing the actions history (the process view).
+The framework ensures that state-dependent rules are seamlessly embedded within your domain model, enhancing maintainability and consistency across your application.<br>
+
+It enables you to send **actions** to your domain, put **rules** over these action's **transitions**,
+and code process business logic on each action in a separate **delegate** Class.<br>
 
 Two main purposes (2 points of vue):
 -  **<em>make your domain flowable</em>**
@@ -34,7 +35,7 @@ Two main purposes (2 points of vue):
     - [Make your Domain Flowabe](#make-your-domain-flowabe)
     - [Invoke Actions](#invoke-actions)
   - [Step8 - Listen and publish flow events](#step8---listen-and-publish-flow-events)
-- [Library DDD Design](#library-ddd-design)
+- [Framework DDD Design](#framework-ddd-design)
 - [Flow Functionalities](#flow-functionalities)
   - [action](#action)
   - [state](#state)
@@ -42,8 +43,9 @@ Two main purposes (2 points of vue):
 - [Advantages](#advantages)
 - [Use Cases](#use-cases)
 - [POC: Order Preparation](#poc-order-preparation)
-- [POC: Reactive version](#poc-reactive-version)
+- [Flow configuration](#flow-configuration)
 - [Genesis and Achievement: Decathlon success story](#genesis-and-achievement-decathlon-success-story)
+- [Get in Touch for Support and Collaboration](#get-in-touch-for-support-and-collaboration)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -93,9 +95,9 @@ Now lets imagine we want to add some process/flow over our Greeting domain to be
 And imagine also we ave these rules:<br>
 1- WORLD action cant be executed without a previous HELLO action<br>
 2- after HELLO action, if WORLD action is not executed during 30 seconds, the Greeting Domain will reset<br>
-3- after HELLO action, when WORLD is executed, the Greeting cant be changed anymore (reach a final State)
+3- when WORLD is executed, the Greeting cant be changed anymore (reach a final State)
 
-Lets explore how we can use the library to reach our goal.
+**Lets explore how we can use the framework to reach our goal.**
 
 ### Step1 - library dependency
 Add the library dependency, here is a gradle example:
@@ -115,14 +117,16 @@ dependencies {
     implementation "com.progmod:flow-reactive:1.0.0"
 }
 ```
-> the **maven** part part we add in **repositories** is for security reasons, to be able to download the library.
+> the **maven** part part we add in **repositories** contains the credentials to be able to download the library.
 
 
 ### Step2 - Action, States and flow.json
 
-Define ACTIONS, STATES and a process/flow based on these ENUMs.
+Define ACTIONS, STATES and a process/flow JSON file based on these ENUMs.
 
 - **ACTION ENUM**
+
+Define a java enum containing the actions your process supports
 ```java
 public enum GreetingAction implements FlowAction {
     HELLO(USER),
@@ -132,9 +136,11 @@ public enum GreetingAction implements FlowAction {
 }
 ```
 
-> USER and SYSTEM indicates if its a user action or system action (TIMEOUT is invoked by the system ).
+> USER vs SYSTEM indicates if its a user action or system action (TIMEOUT is a system action invoked automatically by the system).
 
 - **STATE ENUM**
+
+Define a java enum containing all the states of your process
 ```java
 public enum GreetingState implements FlowState {
     INITIAL,
@@ -144,10 +150,13 @@ public enum GreetingState implements FlowState {
 }
 ```
 > INITIAL : initial state when we create our Greeting domain<br>
-PENDING_COMPLETION : intermediate state<br>
+PENDING_COMPLETION : intermediate state(after a HELLO action)<br>
 EXPIRED, COMPLETED: final states where no more actions are acceptable
 
 - **FlowType ENUM**
+
+This enum lets you define different flow type (ex DEFAULT), each flow type based on the action and state enum.<br>
+
 ```java
 public enum GreetinglowType implements FlowType {
     DEFAULT("default-flow.json", GreetingAction.class, GreetingState.class);
@@ -161,9 +170,10 @@ public enum GreetinglowType implements FlowType {
 
 }
 ```
-> This means that we define a DEFAULT flowType based on GreetingAction and GreetingState enums, and a default-flow.json file.
+> This means that DEFAULT flowType is based on GreetingAction and GreetingState enums, and presented by default-flow.json file.<br>
+> you can have for ex another type EXPRESS with another Json file defining another flow.
 
--  **Flow JSON file**, default-flow.json in our case
+-  flow **Json file** (default-flow.json in our case)
 ```json
 {
     "actions": [
@@ -243,17 +253,18 @@ public interface Flowable<ID> {
   void setFlow(Flow flow);
 }
 ```
-> so to implement this interface you only need to have an Id, State and Flow properties with their getters/setters
+> The Flowable interface requires the implementation of getters and setters for ID, State, and Flow properties, which are essential for a process-centric model.
 
-so the greeting becomes:
+So the greeting becomes:
 ```java
 @Data
 public class Greeting implements Flowable<UUID> {
+    // your aggregate ID
     private UUID id;
     private String message;
     
     // -----------------------------------------------------  
-    // here are the flow elements to add to your domain
+    // flow elements to add to your domain
     // remember that your domain becomes process-centric, 
     // means it holds the flow history
     private String state;
@@ -275,15 +286,16 @@ public class Greeting implements Flowable<UUID> {
 
 ### Step4 - Implement delegates defined in flow.json
 
-Define an ActionDelegate for each **Action**, these delegate will have the process logic when the action is executed
+Define an ActionDelegate for each **Action**.<br>
+these delegate encapsulate the necessary business logic for the corresponding action.
 ```java
 @Component
 public class HelloDelegate implements ActionDelegate<Greeting, DelegateParams, Greeting> {
 
     @Override
     public Mono<UserStory> execute(final Greeting greeting, final Map<String, Object> variables, final DelegateParams delegateParams) {
-        // here you can implement process related logic, ex call a API, etc..
-        // and we invoke logic on our aggregate
+        // implement process related logic, ex call a API, etc..
+        // and invoke(or not) a behavior on our aggregate
         greeting.updateMessage("Hello");
         return Mono.just(greeting);
     }
@@ -295,8 +307,8 @@ public class WorldDelegate implements ActionDelegate<Greeting, DelegateParams, G
 
     @Override
     public Greeting execute(final Greeting greeting, final Map<String, Object> variables, final DelegateParams delegateParams) {
-        // here you can implement process related logic, ex call a API, etc..
-        // and we invoke logic on our aggregate
+        // implement process related logic, ex call a API, etc.. (in our case nothing special)
+        // and invoke(or not) a behavior on our aggregate (in our case we update the message)
         greeting.updateMessage("Hello World");
         return greeting;
     }
@@ -308,8 +320,8 @@ public class TimeoutDelegate extends SystemActionDelegate<Greeting> {
 
     @Override
     public Greeting execute(final Greeting greeting, final Map<String, Object> variables) {
-        // here you can implement process related logic, ex call a API, etc..
-        // and we invoke logic on our aggregate
+        // implement process related logic, ex call a API, etc.. (in our case nothing special)
+        // and invoke(or not) a behavior on our aggregate (in our case we reset the aggregate after a timeout)
         greeting.reset();
         return greeting;
     }
@@ -338,18 +350,18 @@ public interface FlowRepository<T extends Flowable, ID> {
 > This interface contains only the already used method in Spring Repositories so it should be straight froward.<br>
 Means if you are using Spring Data or Spring JPA these methods are already handled
 
-ex for reactive library :
+ex for reactive mode :
 ```java
 public interface DomainRepository extends ReactiveCrudRepository<Greeting, UUID>, FlowRepository<Greeting, UUID> {
 }
 ```
-or JPA
+or JPA mode
 ```java
 public interface DomainRepository extends JpaRepository<Greeting, UUID>, FlowRepository<Greeting, UUID> {
 }
 ```
 
-> the Library includes a Base FlowRepository implementation in case you are using postgres jsonb
+> the framework includes a Base FlowRepository implementation in case you are using postgres jsonb
 > so you can use it to define your domain repository as follow:
 ```java
 @Bean
@@ -402,10 +414,14 @@ CREATE TABLE IF NOT EXISTS flow_task (
 
 ### Step6 - Create the FlowEngine
 
-Instantiate a FlowEngine (the library flow engine) by passing it:<br>
+The FlowEngine is pivotal in managing the lifecycle of flowable domain objects, interfacing with the repository to maintain state consistency and handle transitions.<br>
+In a DDD point of vue it is the application layer (check [framework design](#framework-ddd-design)).
+
+Instantiate a FlowEngine with the:<br>
 -**ID class type** of your Aggregate<br>
 -**Aggragte  class type**<br>
--**Repository** of youre domain
+-**Repository** of your domain
+
 ```java
 @Bean
 FlowEngine<Greeting, UUID> flowEngine(DomainRepository repo) {
@@ -457,9 +473,10 @@ and here you go, your domain will be process-centric (check the state and the fl
 
 ### Step8 - Listen and publish flow events
 
-Each executed **Action** is considered as a **flow Event**.<br> 
-All flow events are pushed to **EventsPublishers**, you can define your own Event Publishers.<br>
-ex:
+Each executed **Action** is considered as a **flow Event**.<br>
+All flow events are pushed to **EventsPublishers**, implementing custom event publishers allows you to have an event-driven architecture.<br>
+You can define your own Event Publisher:<br>
+
 ```java
 @Component
 @Slf4j
@@ -471,18 +488,18 @@ public class KafkaEventPublisher implements EventsPublisher {
 }
 ```
 
-> The Library includes an ActionLogger as an EventsPublisher which logs all the executedAction.<br>
-> You can define your own Logger as EventsPublisher and disable the library one
+> The framework includes an ActionLogger as an EventsPublisher which logs all the executedAction.<br>
+> You can define your own Logger as EventsPublisher and disable the framework one
 
 
-## Library DDD Design
+## Framework DDD Design
 
-The library follows DDD principles.<br>
+The framework design follows DDD principles.<br>
 - Your Aggregate (your principal entity), is at the heart of the domain
-- The library flowEngine acts as the Application layer of your domain
+- The Framework flowEngine acts as the Application layer of your domain
 - The flow related mechanism (actions eligibility, transitions, etc..) is coded as a Domain Service<br>
 
-> <span style="color: blue;">BLUE</span>  : Library Components<br>
+> <span style="color: blue;">BLUE</span>  : Framework Components<br>
 > <span style="color: green;">GREEN</span>  : Your components
 
 
@@ -499,7 +516,7 @@ Here is a List of most of the features and how to use them
 
 we can use these properties on each **action** defined in the **JSON** file
  - **delegate**: the spring bean (implementation of an ActionDelegate) that will be invoked 
- - **expiration**: ture/false(default) used to compute **expiredAt** functionality (inside the **flow** property of the aggregate) 
+ - **expiration**: ture/false(default) used to compute an **expiredAt** functionality (inside the **flow** property of the aggregate) 
 
 ```json
 {
@@ -508,6 +525,9 @@ we can use these properties on each **action** defined in the **JSON** file
   "expiration": true
 }
 ```
+
+> When defined as "expiration" action, whenever we are in a state including a transition with a TIMEOUT action, an "expiresAt" property will be computed,
+> and users knows explicitly when the process will expire.
 
 ### state
 
@@ -568,24 +588,82 @@ we can use these properties on each **transition** defined in the **JSON** file
 
 ## Advantages
 
-logging, monitoring, objects in your Domain (vs variables in BPMs), etc..
+- **Consistency and audability**: 
+  - Enables easy tracking and auditing of all state changes
+  - With state and transition history within the domain, there’s no loss of data or inconsistencies
+- **Unit testing**:
+  - test youre aggregate behavior independently of process behaviour
+  - test your process rules by testing each sepearate delegate
+- **Usefull process-centric properties**:
+  - **expiresAT**: let users know when and if the process will expire
+  - **eligibleActions**: gives the user to know wihc possible actions are allowed (depending on the state)
+- **Easy to use and fun to integrate**:
+  - Intuitive design base on Enums and JSON workflow descriptors
+  - Seamless integration with only some few components to configure
+- **Cost & time effective**:
+  - Reduces the overhead of managing separate BPM tools
+
 
 ## Use Cases
 
-checkout, order preparation, etc..
+Here is a list of some use cases that can be thought as a flow driven domain:
+
+- **Checkout Process**  (process-centric model of an order being placed)
+  - Domain Aggregate: Checkout implements Flowable {}
+  - Domain Entities: Items, shippings ,payments
+  - Flow states: PENDING_SHIPPING,  PENDING_PAYMENT,  COMPLETED, EXPIRED, etc..
+
+
+- **Order Preparation** (check the full application [here](#poc-order-preparation))
+  - Domain Aggregate: OrderPreparation implements Flowable {}
+  - Domain Entities: Items
+  - Flow states: TO_PREPARE, IN_PREPARATION, PENDING_PICKUP, DELIVERED, COMPLETED, etc.
+
+
+- **Product Lifecycle**  (representing the process/lifecycle of a product design and development)
+  - Domain Aggregate: ProductDesign implements Flowable {}  
+  - Domain Entities: InitialDesign, Prototype, FeedBack, etc..
+  - Flow states: PENDING_PROTOTYPING, PENDING_TEST, PRODUCED, STOPPED, etc.
+
+
+- **Job Application Process**
+  - Domain Aggregate: JobApplication implements Flowable {}   (representing the entire lifecycle of the job application)
+  - Domain Entities: ApplicantProfile, JobPosition, Evaluation, etc..
+  - Flow states: PENDING_REVIEW, ACCEPTED, REJECTED, etc.
+
+
+- **And much more…** (every domain can have its own process-centric view)
 
 ## POC: Order Preparation
 
-## POC: Reactive version
+A complete POC application of an order preparation can be found [here](order-preparation-poc/README.md)
+
+## Flow configuration
+
+here are some properties to configure in **application.yaml**
+> Default values are already configured, use only if you want to override
+
+```yaml
+flow:
+  actionLogger:
+    enabled: true    // Default Logger component enabled by default
+  taskConsumer:
+    scheduleMilli: 1000   // schedule for pooling for async tasks (the system tasks that should be executed automatically)
+```
 
 ## Genesis and Achievement: Decathlon success story
 
-The foundational **concept of the library** was originally crafted for **Decathlon**.<br>
+The foundational **concept of the Framework** was originally crafted for **Decathlon**.<br>
 It was specifically tailored to address their **checkout process** needs and challenges.<br>
 
 This concept, a testament to our innovative approach, has been successfully implemented within Decathlon, demonstrating its effectiveness and reliability in a real-world, enterprise environment.<br>
 
-Building on this initial success, the concept was further evolved into a full-fledged library,
+Building on this initial success, the concept was further evolved into a full-fledged framework,
 guided by principles of Domain-Driven Design (DDD), ensuring a robust and scalable architecture.
 
-## Other Hints
+## Get in Touch for Support and Collaboration
+
+If you have any questions, need assistance with the framework, or want to discuss potential projects, please don't hesitate to reach out.<br>
+We value your feedback and are eager to support your projects using this framework.<br>
+Let's innovate and create together!
+- mail : elie.khoury.progmod@gmail.com
