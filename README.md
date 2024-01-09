@@ -1,15 +1,5 @@
----
-title: "Untitled"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
----
-
-
 ![Local Image](./fdd-git.png)
 
-...
 Transform your Domain into a **process-centric domain**.<br>
 The framework ensures that state-dependent rules are seamlessly embedded within your domain model, enhancing maintainability and consistency across your application.<br>
 
