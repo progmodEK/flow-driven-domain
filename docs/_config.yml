@@ -1,5 +1,8 @@
-theme: minima
-title: Flow-Driven Domain
-description: "Documentation and guide for implementing a process-centric domain model."
+title: Just the Docs Template
+description: A starter template for a Jeykll site using the Just the Docs theme!
+theme: just-the-docs
+
+url: https://progmodek.github.io/flow-driven-domain/
+
 
 

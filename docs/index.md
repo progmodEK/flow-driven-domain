@@ -15,40 +15,6 @@ Two main purposes (2 points of vue):
 > - **reactive** functional programming (spring reactor) mode
 > - **normal** mode (imperative programming)
 
-<br>
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [Introduction](#introduction)
-- [How to use <em>(Hello World ex)</em>](#how-to-use-emhello-world-exem)
-  - [Step1 - library dependency](#step1---library-dependency)
-  - [Step2 - Action, States and flow.json](#step2---action-states-and-flowjson)
-  - [Step3 - Implement Flowable interface](#step3---implement-flowable-interface)
-  - [Step4 - Implement delegates defined in flow.json](#step4---implement-delegates-defined-in-flowjson)
-  - [Step5 - Your domain Repository and your DataBase](#step5---your-domain-repository-and-your-database)
-    - [Implements the FlowRepository interface](#implements-the-flowrepository-interface)
-    - [Create Your Domain DB table](#create-your-domain-db-table)
-    - [Create the Tasks Table](#create-the-tasks-table)
-  - [Step6 - Create the FlowEngine](#step6---create-the-flowengine)
-  - [Step7 - Make your domain flowable](#step7---make-your-domain-flowable)
-    - [Make your Domain Flowabe](#make-your-domain-flowabe)
-    - [Invoke Actions](#invoke-actions)
-  - [Step8 - Listen and publish flow events](#step8---listen-and-publish-flow-events)
-- [Framework DDD Design](#framework-ddd-design)
-- [Flow Functionalities](#flow-functionalities)
-  - [action](#action)
-  - [state](#state)
-  - [transition](#transition)
-- [Advantages](#advantages)
-- [Use Cases](#use-cases)
-- [POC: Order Preparation](#poc-order-preparation)
-- [Flow configuration](#flow-configuration)
-- [Genesis and Achievement: Decathlon success story](#genesis-and-achievement-decathlon-success-story)
-- [Get in Touch for Support and Collaboration](#get-in-touch-for-support-and-collaboration)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Introduction
 Beyond basic business logic, domains often incorporate **state-based rules**.<br>
