@@ -1,10 +1,7 @@
 ---
 ---
 
-
-![Local Image](./fdd-git.png)
-
-Transform your Domain into a **process-centric domain**.<br>
+# Transform your Domain into a **process-centric domain**
 The framework ensures that state-dependent rules are seamlessly embedded within your domain model, enhancing maintainability and consistency across your application.<br>
 
 It enables you to send **actions** to your domain, put **rules** over these action's **transitions**,
