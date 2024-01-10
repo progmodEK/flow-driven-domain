@@ -1,10 +1,7 @@
 ![Local Image](./fdd-git.png)
-
-Transform your Domain into a **process-centric domain**.<br>
-The framework ensures that state-dependent rules are seamlessly embedded within your domain model, enhancing maintainability and consistency across your application.<br>
-
+Transform your Domain into a **process-centric domain**<br>
 It enables you to send **actions** to your domain, put **rules** over these action's **transitions**,
-and code process business logic on each action in a separate **delegate** Class.<br>
+and separate process rules classes form your aggregate class and invariants.<br>
 
 Two main purposes (2 points of vue):
 -  **<em>make your domain flowable</em>**
@@ -21,7 +18,7 @@ Two main purposes (2 points of vue):
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Introduction](#introduction)
-- [How to use <em>(Hello World ex)</em>](#how-to-use-emhello-world-exem)
+- [Hello World ex as tutorial](#hello-world-ex-as-tutorial)
   - [Step1 - library dependency](#step1---library-dependency)
   - [Step2 - Action, States and flow.json](#step2---action-states-and-flowjson)
   - [Step3 - Implement Flowable interface](#step3---implement-flowable-interface)
@@ -65,8 +62,12 @@ When using flow-driven-domain, your domain becomes more process-centric:
  - **Flow rules becomes first-call citizen in your your domain**
  - **Flow history is kept inside your domain model**
 
+Please read the [hello world](#hello-world-ex-as-tutorial) as tutorial.
+Then try a complete POC application [here](order-preparation-poc/README.md)
 
-## How to use <em>(Hello World ex)</em>
+## Hello World ex as tutorial
+
+You can find here a complete
 
 Let's consider a HELLO WORLD example, where your domain is Greeting Aggregate with a simple Value Object message as String
 ```java
@@ -105,7 +106,7 @@ Add the library dependency, here is a gradle example:
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://maven.pkg.github.com/progmodEK/flow-friven-domain")
+        url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
         credentials {
             username = "fdd-user"
             password = "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"
