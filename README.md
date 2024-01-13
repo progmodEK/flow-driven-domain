@@ -109,7 +109,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
         credentials {
             username = "fdd-user"
-            password = "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"
+            password = "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"
         }
     }
 }
