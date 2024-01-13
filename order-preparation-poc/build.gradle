@@ -15,7 +15,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
         credentials {
             username = project.findProperty("gpr.user")
-            password = project.findProperty("gpr.key")
+            password = project.findProperty("gpr.key1") + project.findProperty("gpr.key2")
         }
     }
 }
