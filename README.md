@@ -1,13 +1,13 @@
-![Local Image](./fdd-git.png)
+![Local Image](assets/fdd-git.png)
 Transform your Domain into a **process-centric domain**<br>
 It enables you to send **actions** to your domain, put **rules** over these action's **transitions**,
-and separate process rules classes form your aggregate class and invariants.<br>
+and separate process rules classes from your aggregate class and invariants.<br>
 
-Two main purposes (2 points of vue):
+🎯Two main purposes (2 points of vue):
 -  **<em>make your domain flowable</em>**
 -  **<em>develop your domain as a process</em>**
 
-> Available in
+> 💻Available in
 > - **reactive** functional programming (spring reactor) mode
 > - **normal** mode (imperative programming)
 
@@ -15,38 +15,38 @@ Two main purposes (2 points of vue):
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+📚 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Introduction](#introduction)
-- [Hello World ex as tutorial](#hello-world-ex-as-tutorial)
-  - [Step1 - library dependency](#step1---library-dependency)
-  - [Step2 - Action, States and flow.json](#step2---action-states-and-flowjson)
-  - [Step3 - Implement Flowable interface](#step3---implement-flowable-interface)
-  - [Step4 - Implement delegates defined in flow.json](#step4---implement-delegates-defined-in-flowjson)
-  - [Step5 - Your domain Repository and your DataBase](#step5---your-domain-repository-and-your-database)
+- [Introduction](#-introduction)
+- [Hello World ex as tutorial](#-hello-world-ex-as-tutorial)
+  - [Step1 - library dependency](#-step1---library-dependency)
+  - [Step2 - Action, States and flow.json](#-step2---action-states-and-flowjson)
+  - [Step3 - Implement Flowable interface](#-step3---implement-flowable-interface)
+  - [Step4 - Implement delegates defined in flow.json](#-step4---implement-delegates-defined-in-flowjson)
+  - [Step5 - Your domain Repository and your DataBase](#-step5---your-domain-repository-and-your-database)
     - [Implements the FlowRepository interface](#implements-the-flowrepository-interface)
     - [Create Your Domain DB table](#create-your-domain-db-table)
     - [Create the Tasks Table](#create-the-tasks-table)
-  - [Step6 - Create the FlowEngine](#step6---create-the-flowengine)
-  - [Step7 - Make your domain flowable](#step7---make-your-domain-flowable)
+  - [Step6 - Create the FlowEngine](#-step6---create-the-flowengine)
+  - [Step7 - Make your domain flowable](#-step7---make-your-domain-flowable)
     - [Make your Domain Flowabe](#make-your-domain-flowabe)
     - [Invoke Actions](#invoke-actions)
-  - [Step8 - Listen and publish flow events](#step8---listen-and-publish-flow-events)
-- [Framework DDD Design](#framework-ddd-design)
-- [Flow Functionalities](#flow-functionalities)
+  - [Step8 - Listen and publish flow events](#-step8---listen-and-publish-flow-events)
+- [Framework DDD Design](#-framework-ddd-design)
+- [Flow Functionalities](#-flow-functionalities)
   - [action](#action)
   - [state](#state)
   - [transition](#transition)
-- [Advantages](#advantages)
-- [Use Cases](#use-cases)
-- [POC: Order Preparation](#poc-order-preparation)
-- [Flow configuration](#flow-configuration)
-- [Genesis and Achievement: Decathlon success story](#genesis-and-achievement-decathlon-success-story)
-- [Get in Touch for Support and Collaboration](#get-in-touch-for-support-and-collaboration)
+- [Advantages](#-advantages)
+- [Use Cases](#-use-cases)
+- [Order Preparation POC](#-order-preparation-poc)
+- [Flow configuration](#-flow-configuration)
+- [Genesis and Achievement: Decathlon success story](#-genesis-and-achievement-decathlon-success-story)
+- [Get in Touch for Support and Collaboration](#-get-in-touch-for-support-and-collaboration)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Introduction
+## 🔍 Introduction
 Beyond basic business logic, domains often incorporate **state-based rules**.<br>
 When these state-dependent rules come into the picture, the domain's overall structure
 becomes **more complex over time**, making both evolutionary changes and maintenance more difficult
@@ -65,9 +65,7 @@ When using flow-driven-domain, your domain becomes more process-centric:
 Please read the [hello world](#hello-world-ex-as-tutorial) as tutorial.
 Then try a complete POC application [here](order-preparation-poc/README.md)
 
-## Hello World ex as tutorial
-
-You can find here a complete
+## 👋🌍 Hello World ex as tutorial
 
 Let's consider a HELLO WORLD example, where your domain is Greeting Aggregate with a simple Value Object message as String
 ```java
@@ -100,16 +98,17 @@ And imagine also we ave these rules:<br>
 
 **Lets explore how we can use the framework to reach our goal.**
 
-### Step1 - library dependency
+### 📦 Step1 - library dependency
 Add the library dependency, here is a gradle example:
+
 ```gradle
 repositories {
     mavenCentral()
     maven {
         url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
         credentials {
-            username = "fdd-user"
-            password = "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"
+            username = "xxx"
+            password = "yyy"
         }
     }
 }
@@ -118,10 +117,10 @@ dependencies {
     implementation "com.progmod:flow-reactive:1.0.0"
 }
 ```
-> the **maven** part part we add in **repositories** contains the credentials to be able to download the library.
+> Replace **username** with **fdd-user** and **password** use the concatenation of <br>
+> **ghp_** and **FydBJTdOMtGzPufHwsrOWg8X1hbP4L3Y8VOn**
 
-
-### Step2 - Action, States and flow.json
+### 🎛️ Step2 - Action, States and flow.json
 
 Define ACTIONS, STATES and a process/flow JSON file based on these ENUMs.
 
@@ -242,7 +241,7 @@ public enum GreetinglowType implements FlowType {
 --**PENDING_COMPLETION** has 2 transitions, one with action **WORLD** that transit to **COMPLETED** state, and one with **TIMEOUT** (this one is automatic with a **timer** of 30sec),
 means that while in **PENDING_COMPLETION** state, if no **WORLD** action is called, it will automatically transit to **EXPIRED** after 30 sec
 
-### Step3 - Implement Flowable interface
+### ⚙️ Step3 - Implement Flowable interface
 
 Let your Domain Aggregate Implement the Flowable Interface
 ```java
@@ -285,7 +284,7 @@ public class Greeting implements Flowable<UUID> {
   if you are using NOSQL it will be straight forward,<br>
   if not you must persist Flow property as json or jsonb
 
-### Step4 - Implement delegates defined in flow.json
+### ✍️ Step4 - Implement delegates defined in flow.json
 
 Define an ActionDelegate for each **Action**.<br>
 these delegate encapsulate the necessary business logic for the corresponding action.
@@ -337,7 +336,7 @@ public class TimeoutDelegate extends SystemActionDelegate<Greeting> {
 > **Note**: for the system action **TIMEOUT" we extends **SystemActionDelegate<T extends Flowable>** which is a special implementation of ActionDelegate without input params and the aggregate as return value
 
 
-### Step5 - Your domain Repository and your DataBase
+### 🗄️ Step5 - Your domain Repository and your DataBase
 
 ####  Implements the FlowRepository interface
 Let your **DomainRepository**  extends this **FlowRepository** interface<br>
@@ -413,7 +412,7 @@ CREATE TABLE IF NOT EXISTS flow_task (
 ```
 > Replace the types by your specific database types (ex VARCHAR(255), BIGINT, INTEGER)
 
-### Step6 - Create the FlowEngine
+### 🚀 Step6 - Create the FlowEngine
 
 The FlowEngine is pivotal in managing the lifecycle of flowable domain objects, interfacing with the repository to maintain state consistency and handle transitions.<br>
 In a DDD point of vue it is the application layer (check [framework design](#framework-ddd-design)).
@@ -430,7 +429,7 @@ FlowEngine<Greeting, UUID> flowEngine(DomainRepository repo) {
 }
 ```
 
-### Step7 - Make your domain flowable
+### 🔄 Step7 - Make your domain flowable
 Make your domain flowable and execute actions on your domain
 
 ####  Make your Domain Flowabe
@@ -472,7 +471,7 @@ and here you go, your domain will be process-centric (check the state and the fl
 ```
 > we can see when the **HELLO** action was executed and how the state arrived to **PENDING_COMPLETE** and we see too that the Greeting will expire in 30sec with the **expiresAt** property
 
-### Step8 - Listen and publish flow events
+### 📣 Step8 - Listen and publish flow events
 
 Each executed **Action** is considered as a **flow Event**.<br>
 All flow events are pushed to **EventsPublishers**, implementing custom event publishers allows you to have an event-driven architecture.<br>
@@ -493,7 +492,7 @@ public class KafkaEventPublisher implements EventsPublisher {
 > You can define your own Logger as EventsPublisher and disable the framework one
 
 
-## Framework DDD Design
+## 🏗️ Framework DDD Design
 
 The framework design follows DDD principles.<br>
 - Your Aggregate (your principal entity), is at the heart of the domain
@@ -504,11 +503,11 @@ The framework design follows DDD principles.<br>
 > <span style="color: green;">GREEN</span>  : Your components
 
 
-![Local Image](./fdd-design.png)
+![Local Image](assets/fdd-design.png)
 
 > the **Port/Interface** part that links the domain to the infra layer is not shown to simplify the diagram<br>
 
-## Flow Functionalities
+## 🛠️ Flow Functionalities
 
 We saw in HelloWorld example some features of the **flow.json** when defining actions, states and transitions.<br>
 Here is a List of most of the features and how to use them
@@ -587,7 +586,7 @@ we can use these properties on each **transition** defined in the **JSON** file
 > in case of other *$exceptions** (not handled by the exceptions part) occurred then stay in same state, but after **3 retries**  transit to **NOT_APPROVED**<br>
 
 
-## Advantages
+## ✅ Advantages
 
 - **Consistency and audability**: 
   - Enables easy tracking and auditing of all state changes
@@ -605,7 +604,7 @@ we can use these properties on each **transition** defined in the **JSON** file
   - Reduces the overhead of managing separate BPM tools
 
 
-## Use Cases
+## 💼 Use Cases
 
 Here is a list of some use cases that can be thought as a flow driven domain:
 
@@ -635,11 +634,11 @@ Here is a list of some use cases that can be thought as a flow driven domain:
 
 - **And much more…** (every domain can have its own process-centric view)
 
-## POC: Order Preparation
+## 📝 Order Preparation POC
 
 A complete POC application of an order preparation can be found [here](order-preparation-poc/README.md)
 
-## Flow configuration
+## 🔧 Flow configuration
 
 here are some properties to configure in **application.yaml**
 > Default values are already configured, use only if you want to override
@@ -652,7 +651,7 @@ flow:
     scheduleMilli: 1000   // schedule for pooling for async tasks (the system tasks that should be executed automatically)
 ```
 
-## Genesis and Achievement: Decathlon success story
+## 🌟 Genesis and Achievement: Decathlon success story
 
 The foundational **concept of the Framework** was originally crafted for **Decathlon**.<br>
 It was specifically tailored to address their **checkout process** needs and challenges.<br>
@@ -662,7 +661,7 @@ This concept, a testament to our innovative approach, has been successfully impl
 Building on this initial success, the concept was further evolved into a full-fledged framework,
 guided by principles of Domain-Driven Design (DDD), ensuring a robust and scalable architecture.
 
-## Get in Touch for Support and Collaboration
+## 🤝 Get in Touch for Support and Collaboration
 
 If you have any questions, need assistance with the framework, or want to discuss potential projects, please don't hesitate to reach out.<br>
 We value your feedback and are eager to support your projects using this framework.<br>
