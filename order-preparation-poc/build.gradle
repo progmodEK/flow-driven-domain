@@ -12,7 +12,7 @@ repositories {
     mavenCentral()
     // mavenLocal()
     maven {
-        url = uri("https://maven.pkg.github.com/progmodEK/fdd-maven-repo")
+        url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
         credentials {
             username = project.findProperty("gpr.user")
             password = project.findProperty("gpr.key")
