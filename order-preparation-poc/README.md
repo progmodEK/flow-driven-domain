@@ -1,5 +1,5 @@
 
-# Order Preparation POC
+# Order Preparation POC !
 
 Here is a complete example of an Order Preparation domain.
 > The same application exist in reactive mode (spring webflux and project reactor) under
