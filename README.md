@@ -10,6 +10,8 @@ and separate process rules classes from your aggregate class and invariants.<br>
 > 💻Available in
 > - **reactive** functional programming (spring reactor) mode
 > - **normal** mode (imperative programming)
+>
+> Prerequisite: **JAVA 17** or higher
 
 <br>
 

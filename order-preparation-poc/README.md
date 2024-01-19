@@ -5,6 +5,8 @@ Here is a complete example of an Order Preparation domain.
 > The same application exist in reactive mode (spring webflux and project reactor) under
 > **order-preparation-poc-reactive**
 
+> Prerequisite: **JAVA 17** or higher
+
 ## Use Case Explanation
 
 Our application is designed to manage the preparation of orders in a click-and-collect retail environment.<br>
