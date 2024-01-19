@@ -109,18 +109,28 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
         credentials {
-            username = "xxx"
-            password = "yyy"
+            username = "FDD_USER" // you can put here any username, it does not matters
+            password = __PASSWORD__ // personal acces token with read:packages access)
         }
     }
 }
 
 dependencies {
-    implementation "com.progmod:flow-reactive:1.0.0"
+    implementation "com.progmod:flow-reactive:1.0.0"  // or "com.progmod:flow:1.0.0"  for non-reactive
 }
 ```
-> Replace **username** with **fdd-user** and **password** use the concatenation of <br>
-> **ghp_** and **FydBJTdOMtGzPufHwsrOWg8X1hbP4L3Y8VOn**
+
+> Replace **__PASSWORD__** with a PAT (Personal Access token) <br>
+> To obtain a PAT, follow these steps:
+> 1. Navigate to your GitHub profile.
+> 2. Go to **Settings**.
+> 3. Select **Developer Settings**.
+> 4. Click on **Personal Access Tokens**.
+> 5. Choose **Tokens (classic)**.
+> 6. Click on **Generate new token**.
+> 7. When creating the token, ensure you grant it the `read:packages` scope.
+
+This token is required for accessing packages from GitHub Packages.
 
 ### 🎛️ Step2 - Action, States and flow.json
 
@@ -638,7 +648,8 @@ Here is a list of some use cases that can be thought as a flow driven domain:
 
 ## 📝 Order Preparation POC
 
-A complete POC application of an order preparation can be found [here](order-preparation-poc/README.md)
+A complete POC application for Preparation of Orders in a click-and-collect retail environment can be found [here](order-preparation-poc/README.md)
+> Prerequisite: **JAVA 17** or higher
 
 ## 🔧 Flow configuration
 

@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Order Preparation POC](#order-preparation-poc)
+  - [Use Case Explanation](#use-case-explanation)
+    - [Process rules:](#process-rules)
+    - [Aggregate rules:](#aggregate-rules)
+  - [Note on Repository:](#note-on-repository)
+  - [DataBase tables](#database-tables)
+  - [Install and launch](#install-and-launch)
+  - [APIs collection](#apis-collection)
+    - [Postman collection](#postman-collection)
+    - [Curl commands](#curl-commands)
+  - [Example of a COMPLETE OrderPreparation](#example-of-a-complete-orderpreparation)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 # Order Preparation POC
 
@@ -79,22 +97,35 @@ CREATE TABLE IF NOT EXISTS poc.flow_task (
 
 ## Install and launch
 
-- clone the repo 
+- **clone the repo**
 ```shell
 git clone https://github.com/progmodEK/flow-driven-domain.git
 ```
 
-- launch a postgres container
+- **generate a git PAT** (Personal Access Token) with **read:packages** scope, copy it and place it in **[gradle.properties](../gradle.properties)** (gpr.key)
+
+> To obtain a PAT, follow these steps:
+> 1. Navigate to your GitHub profile.
+> 2. Go to **Settings**.
+> 3. Select **Developer Settings**.
+> 4. Click on **Personal Access Tokens**.
+> 5. Choose **Tokens (classic)**.
+> 6. Click on **Generate new token**.
+> 7. When creating the token, ensure you grant it the `read:packages` scope.
+>>This token is required for accessing packages from GitHub Packages.
+
+- **launch a postgres container**
 ```shell
 cd flow-driven-domain
 mkdir -p ./tools/data/postgres-data
 docker-compose up &
 ```
 
-- launch the application
+- **launch the application**
 ```shell
 ./gradlew :order-preparation-poc:bootRun
 ```
+> replace with **order-preparation-poc-reactive** for the reactive app
 
 
 ##  APIs collection
