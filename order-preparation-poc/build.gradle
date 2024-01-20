@@ -10,20 +10,11 @@ version "0.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    // mavenLocal()
-    maven {
-        url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
-        credentials {
-            username = project.findProperty("gpr.user")
-            password = project.findProperty("gpr.key")
-        }
-    }
 }
 
 dependencies {
-
     // Flow Driven Domain Library
-    implementation "com.progmod:flow:1.0.0"
+    implementation "io.github.progmodek:flow:1.0.1"
 
     //Spring
     implementation "org.springframework.boot:spring-boot-starter-web"

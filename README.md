@@ -106,31 +106,12 @@ Add the library dependency, here is a gradle example:
 ```gradle
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://maven.pkg.github.com/progmodEK/flow-driven-domain")
-        credentials {
-            username = "FDD_USER" // you can put here any username, it does not matters
-            password = __PASSWORD__ // personal acces token with read:packages access)
-        }
-    }
 }
 
 dependencies {
-    implementation "com.progmod:flow-reactive:1.0.0"  // or "com.progmod:flow:1.0.0"  for non-reactive
+    implementation "io.github.progmodek:flow-reactive:1.0.1"  //  "io.github.progmodek:flow:1.0.1"  for non-reactive
 }
 ```
-
-> Replace **__PASSWORD__** with a PAT (Personal Access token) <br>
-> To obtain a PAT, follow these steps:
-> 1. Navigate to your GitHub profile.
-> 2. Go to **Settings**.
-> 3. Select **Developer Settings**.
-> 4. Click on **Personal Access Tokens**.
-> 5. Choose **Tokens (classic)**.
-> 6. Click on **Generate new token**.
-> 7. When creating the token, ensure you grant it the `read:packages` scope.
-
-This token is required for accessing packages from GitHub Packages.
 
 ### 🎛️ Step2 - Action, States and flow.json
 

@@ -102,18 +102,6 @@ CREATE TABLE IF NOT EXISTS poc.flow_task (
 git clone https://github.com/progmodEK/flow-driven-domain.git
 ```
 
-- **generate a git PAT** (Personal Access Token) with **read:packages** scope, copy it and place it in **[gradle.properties](../gradle.properties)** (gpr.key)
-
-> To obtain a PAT, follow these steps:
-> 1. Navigate to your GitHub profile.
-> 2. Go to **Settings**.
-> 3. Select **Developer Settings**.
-> 4. Click on **Personal Access Tokens**.
-> 5. Choose **Tokens (classic)**.
-> 6. Click on **Generate new token**.
-> 7. When creating the token, ensure you grant it the `read:packages` scope.
->>This token is required for accessing packages from GitHub Packages.
-
 - **launch a postgres container**
 ```shell
 cd flow-driven-domain
