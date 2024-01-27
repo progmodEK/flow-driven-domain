@@ -585,8 +585,14 @@ we can use these properties on each **transition** defined in the **JSON** file
   - Enables easy tracking and auditing of all state changes
   - With state and transition history within the domain, there’s no loss of data or inconsistencies
 - **Unit testing**:
-  - test youre aggregate behavior independently of process behaviour
-  - test your process rules by testing each sepearate delegate
+  - Test youre aggregate behavior independently of process behaviour
+  - Test your process rules by testing each sepearate delegate
+- **Synchronous user request-response capabilities**:
+  - FlowEngine can apply an action and its delegate and the delegate can provide an object response to the client
+  - Improve system-user interactions and provides UX flexibility
+- **Asynchronous system action capabilities**:
+  - Define system-triggered Actions, like timeouts, to automate specific flow transitions
+  - Non blocking operations: by handling actions asynchronously, the system can continue performing other actions, improving overall efficiency
 - **Usefull process-centric properties**:
   - **expiresAT**: let users know when and if the process will expire
   - **eligibleActions**: gives the user to know wihc possible actions are allowed (depending on the state)
