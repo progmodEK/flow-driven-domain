@@ -1,8 +1,8 @@
 plugins {
     id "java"
-    id "io.freefair.lombok" version "8.4"
-    id "org.springframework.boot" version "3.1.2"
-    id "io.spring.dependency-management" version "1.1.4"
+    id "io.freefair.lombok" version "9.5.0"
+    id "org.springframework.boot" version "4.1.0"
+    id "io.spring.dependency-management" version "1.1.7"
 }
 
 group "com.progmod.poc"
@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     // Flow Driven Domain Library
-    implementation "io.github.progmodek:flow:1.0.1"
+    implementation "io.github.progmodek:flow:1.1.0"
 
     //Spring
     implementation "org.springframework.boot:spring-boot-starter-web"
