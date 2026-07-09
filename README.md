@@ -109,7 +109,7 @@ repositories {
 }
 
 dependencies {
-    implementation "io.github.progmodek:flow-reactive:1.0.1"  //  "io.github.progmodek:flow:1.0.1"  for non-reactive
+    implementation "io.github.progmodek:flow-reactive:1.1.0"  //  "io.github.progmodek:flow:1.1.0"  for non-reactive
 }
 ```
 
