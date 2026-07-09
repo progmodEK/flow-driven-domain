@@ -1,4 +1,4 @@
-rootProject.name='fdd-poc'
+rootProject.name='flow-driven-domain'
 include 'order-preparation-poc'
 include 'order-preparation-poc-reactive'
 
