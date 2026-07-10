@@ -1,5 +1,6 @@
 rootProject.name='flow-driven-domain'
 include 'order-preparation-poc'
 include 'order-preparation-poc-reactive'
+include 'checkout-poc-fdd-skill'
 
 

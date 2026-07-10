@@ -1,0 +1,58 @@
+{
+  "actions": [
+    { "name": "START_CHECKOUT", "delegate": "startCheckoutDelegate" },
+    { "name": "SET_SHIPPING",   "delegate": "setShippingDelegate" },
+    { "name": "SUBMIT_PAYMENT", "delegate": "submitPaymentDelegate" },
+    { "name": "CONFIRM_PAYMENT", "delegate": "confirmPaymentDelegate" },
+    { "name": "CANCEL",         "delegate": "cancelDelegate" },
+    { "name": "EXPIRE",         "delegate": "expireDelegate", "expiration": true }
+  ],
+  "states": [
+    {
+      "name": "CART",
+      "initial": true,
+      "transitions": [
+        { "action": "START_CHECKOUT", "result": { "success": "AWAITING_SHIPPING" } },
+        { "action": "CANCEL",         "result": { "success": "CANCELLED" } },
+        { "action": "EXPIRE",         "result": { "success": "EXPIRED" }, "timer": { "sec": 60 } }
+      ]
+    },
+    {
+      "name": "AWAITING_SHIPPING",
+      "transitions": [
+        { "action": "SET_SHIPPING", "result": { "success": "AWAITING_PAYMENT" } },
+        { "action": "CANCEL",       "result": { "success": "CANCELLED" } }
+      ]
+    },
+    {
+      "name": "AWAITING_PAYMENT",
+      "transitions": [
+        { "action": "SUBMIT_PAYMENT", "result": { "success": "PROCESSING_PAYMENT" } },
+        { "action": "CANCEL",         "result": { "success": "CANCELLED" } }
+      ]
+    },
+    {
+      "name": "PROCESSING_PAYMENT",
+      "transitions": [
+        { "action": "CONFIRM_PAYMENT",
+          "result":     { "success": "CONFIRMED" },
+          "exceptions": { "001": "RETRY_PAYMENT" },
+          "timer":      { "sec": 0 } }
+      ]
+    },
+    {
+      "name": "RETRY_PAYMENT",
+      "transitions": [
+        { "action": "CONFIRM_PAYMENT",
+          "result":     { "success": "CONFIRMED" },
+          "exceptions": { "001": "RETRY_PAYMENT" },
+          "retry":      { "number": 3, "exceeded": "PAYMENT_FAILED" },
+          "timer":      { "sec": 10 } }
+      ]
+    },
+    { "name": "CONFIRMED",      "transitions": [] },
+    { "name": "PAYMENT_FAILED", "transitions": [] },
+    { "name": "CANCELLED",      "transitions": [] },
+    { "name": "EXPIRED",        "transitions": [] }
+  ]
+}
