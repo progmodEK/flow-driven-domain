@@ -1,0 +1,23 @@
+{
+  "skill_name": "fdd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build me a Spring Boot service with the flow-driven-domain library for handling insurance claims. A policyholder files a claim (with a policy number and a requested amount) and uploads supporting documents — they can upload in several batches until all required documents are in. Once the file is complete an adjuster assesses it and either approves or rejects it. On approval the system should automatically pay out, but the payment gateway is flaky so it must retry a few times before giving up. The requested amount must never exceed the policy limit. Rich domain style please.",
+      "expected_output": "A complete runnable Flowable-direct Spring Boot project on a NEW domain (never the order-prep template): a Claim aggregate implementing Flowable<UUID> carrying policy number/requested amount/documents with a limit invariant, Action/State/FlowType enums, workflow JSON with a repeatable branching document-upload transition (incomplete/complete), an assessment transition (approve/reject), and a SYSTEM payout action with retry+timer landing in a retry state then a failed state, delegates whose bean names match the JSON, FlowEngine+BasePostgresJsonRepository config, Flyway migration with aggregate table + flow_task, application.yaml, REST controller with one endpoint per USER action only, docker-compose, gradle wrapper, README. Must compile.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Scaffold an FDD (flow-driven-domain) app for a document approval workflow. A document is submitted for review; a reviewer either approves or rejects it; if nobody acts within an hour it should auto-escalate. There's no real domain data beyond who did what, so use the BaseFlow approach.",
+      "expected_output": "A complete runnable BaseFlow Spring Boot project: no aggregate class, FlowEngine<BaseFlow,String> + BasePostgresJsonRepository(BaseFlow.class) with a varchar id column, ESCALATE as a SYSTEM action with a timer, delegates typed ActionDelegate<BaseFlow, ...>, controller creating via buildBaseFlow and advancing via applyAction(String id, ...), migration with varchar id + flow_task, docker-compose, gradle wrapper, README. Must compile.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Turn this into a process-centric Spring Boot service with flow-driven-domain: a job application that goes pending-review -> (screening) -> either accepted or rejected, and if it sits in pending-review for 7 days it auto-expires. Applicant has a name, email, and the position applied for. Pick whichever FDD style fits best and explain why.",
+      "expected_output": "The skill recommends Flowable-direct (there is real domain data: name/email/position) with a clear justification, then generates a complete runnable project: JobApplication aggregate implementing Flowable, states pending-review/accepted/rejected/expired, a SYSTEM expire action on a 7-day timer, USER screening/accept/reject actions, full wiring + migration + flow_task + wrapper + README. Must compile.",
+      "files": []
+    }
+  ]
+}

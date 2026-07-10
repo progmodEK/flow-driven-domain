@@ -1,0 +1,13 @@
+{
+  "name": "flow-driven-domain-marketplace",
+  "owner": {
+    "name": "progmodek"
+  },
+  "plugins": [
+    {
+      "name": "fdd",
+      "source": "./plugins/fdd",
+      "description": "Scaffolds a complete, runnable Spring Boot application on top of the flow-driven-domain (FDD) library — designs states/actions/transitions + workflow JSON from a natural-language process description and generates the full project."
+    }
+  ]
+}
