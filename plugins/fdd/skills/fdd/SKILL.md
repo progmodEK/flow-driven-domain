@@ -125,7 +125,12 @@ specifics change. Generate every file:
    first letter lowercased, and it **must** equal the `delegate` string in the JSON.
 6. `dto/` — request records (Jackson `com.fasterxml.jackson.annotation.*` namespace).
 7. `infra/primary/` — the REST controller (one endpoint per **USER** action + create + GET) and an
-   `ErrorHandler`. `infra/secondary/` — an optional sample `EventsPublisher`.
+   `ErrorHandler`. `infra/secondary/` — **one** working `EventsPublisher` (a `LoggingEventPublisher`
+   that reads the flow's domain events and logs them). Always generate exactly one: it is the evidence
+   that publishing domain events is plug-in — the engine fans out to *every* `EventsPublisher` bean
+   after each action, so adding another sink (Kafka, an HTTP webhook, an outbox) is just another
+   `@Component`. Keep the generated one a log sink (no Kafka/broker) so the app runs on Postgres alone,
+   with a comment marking the body as the swap-point for a real destination. See `fdd-api.md` §8.
 8. `resources/flow/<name>.json` — the workflow JSON (validate against the `workflow-json.md`
    checklist).
 9. `resources/application.yaml` — datasource + Flyway (own schema) + `flow.*` props.

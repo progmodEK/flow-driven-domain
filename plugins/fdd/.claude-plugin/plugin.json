@@ -1,7 +1,7 @@
 {
   "name": "fdd",
   "description": "Scaffolds a complete, runnable Spring Boot application on top of the flow-driven-domain (FDD) library (io.github.progmodek:flow). Turns a natural-language process description into states/actions/transitions, a workflow JSON, and the full project.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "progmodek"
   }

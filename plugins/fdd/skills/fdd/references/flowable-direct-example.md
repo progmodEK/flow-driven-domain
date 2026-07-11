@@ -32,7 +32,7 @@ picks (default `com.example.<domain>`), and a matching root path for controllers
     │   ├── dto/*.java                              (request records)
     │   ├── infra/primary/PocController.java
     │   ├── infra/primary/ErrorHandler.java
-    │   └── infra/secondary/KafkaEventPublisher.java
+    │   └── infra/secondary/LoggingEventPublisher.java  (sample EventsPublisher)
     └── resources/
         ├── application.yaml
         ├── db/migration/V1__Initial_version.sql
@@ -314,12 +314,26 @@ public class ErrorHandler {
 }
 ```
 
-## infra/secondary/KafkaEventPublisher.java (optional sample EventsPublisher)
+## infra/secondary/LoggingEventPublisher.java (sample EventsPublisher — the pluggable sink)
+Every generated app ships exactly one of these. It is the evidence that reacting to domain events is
+plug-in: the engine fans out to **every** `EventsPublisher` bean after each action, so adding a second
+sink (Kafka, an HTTP webhook, an outbox table, a metrics counter) is just another `@Component` — no
+wiring, no `@Enable`. This one reads the events off the flow and logs them; **swap the body to publish
+wherever you want**. Keep the generated one a log sink so the app runs with only Postgres.
 ```java
-@Component @Slf4j
-public class KafkaEventPublisher implements EventsPublisher {
-  @Override public void publishEvents(final Flowable flow) {
-    log.info("PUBLISH EVENTS TO KAFKA IF YOU WANT");
+@Component @Log4j2
+public class LoggingEventPublisher implements EventsPublisher {
+  @Override
+  public <ID> void publishEvents(final Flowable<ID> flowable) {
+    // The engine records one ActionExecuted per action; delegates may add custom FlowEvents too.
+    flowable.getFlow().getEvents().stream()
+        .filter(ActionExecuted.class::isInstance)
+        .map(ActionExecuted.class::cast)
+        .forEach(event -> log.info("[domain-event] flow={} action={} {} -> {}{}",
+            flowable.getId(), event.getAction(), event.getFromState(), event.getToState(),
+            event.isErrorOccurs() ? " (error: " + event.getErrorMessage() + ")" : ""));
+    // Plug a real sink here instead of/besides logging:
+    //   kafkaTemplate.send(topic, event);  webhookClient.post(url, event);  outboxRepo.save(event);
   }
 }
 ```

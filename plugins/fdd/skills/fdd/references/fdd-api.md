@@ -27,6 +27,7 @@ import static com.progmod.flow.domain.model.ActionType.SYSTEM;
 import com.progmod.flow.domain.model.Flowable;
 import com.progmod.flow.domain.model.Flow;
 import com.progmod.flow.domain.model.BaseFlow;          // BaseFlow mode only
+import com.progmod.flow.domain.model.ActionExecuted;     // built-in domain event (read in an EventsPublisher)
 
 // --- delegates: domain.service.delegate, NOT domain.delegate ---
 import com.progmod.flow.domain.service.delegate.ActionDelegate;
@@ -285,8 +286,19 @@ built-in convenience. The default persistence for generated apps is this Postgre
   commented out).
 - What the consumer must still declare: the `FlowRepository` bean, the `FlowEngine` bean, and each
   `@Component ActionDelegate`.
-- `EventsPublisher` (`publishEvents(Flowable)`) is an optional SPI to fan out flow events; a
-  no-op/logging implementation is fine (see the sample `KafkaEventPublisher`).
+- **Listening to domain events = implement `EventsPublisher`.** `publishEvents(Flowable)` is the SPI
+  the engine calls after *every* action (right after it saves the aggregate).
+  `EventPublisherRegistry` injects `List<EventsPublisher>` — Spring collects **all** beans
+  implementing the interface and hands each the flow — so registering a new sink is just adding a
+  `@Component`, with no config and no `@Enable`. Multiple sinks coexist and run independently; the
+  library's own `FlowActionLogger` is exactly one such bean. Read the events off
+  `flowable.getFlow().getEvents()` and filter to the `FlowEvent` types you care about — the engine
+  emits an `ActionExecuted` per action (`action` / `fromState` / `toState` / `isErrorOccurs` /
+  `errorMessage`), and delegates may add custom `FlowEvent`s via `flowable.addEvent(...)`. It runs
+  **synchronously inside the action's transaction**, so keep a listener quick and safe: a throw rolls
+  the action back (use Spring's `@TransactionalEventListener` if you need after-commit fan-out).
+  Generated apps always include one working sample sink — the `LoggingEventPublisher` in the worked
+  example — whose body is the single swap-point for a real destination (Kafka, HTTP, an outbox, ...).
 - Config props (all optional, sensible defaults) under `flow.*`:
   `flow.actionLogger.enabled`, `flow.taskConsumer.scheduleMilli`, `flow.taskConsumer.batch`,
   `flow.taskConsumer.concurrency`, `flow.lockService.lockTimeoutSec`,

@@ -203,3 +203,10 @@ CREATE TABLE IF NOT EXISTS approval.flow_task (
 The persisted row's `flow_data` for a BaseFlow holds `id`, `createdAt`, `state`, `flowType`,
 `actions`, `eligibleActions`, `variables` **at the top level** (no nested `flow` node), because
 `BaseFlow` *is* its own `Flow`.
+
+## infra/secondary/LoggingEventPublisher.java (same as Flowable-direct)
+Generate the one sample `EventsPublisher` here too — it is **identical** to the flowable-direct
+version (see `flowable-direct-example.md`), because `BaseFlow implements Flowable<String>` and the SPI
+is typed on `Flowable<ID>`. It reads `flowable.getFlow().getEvents()`, logs each `ActionExecuted`, and
+is the single `@Component` you swap to fan events out to any real sink. Nothing BaseFlow-specific
+changes.
