@@ -10,6 +10,16 @@ the full project: build files (Gradle or Maven), the `Flowable`/`BaseFlow` domai
 action delegates, `FlowEngine` wiring, Flyway migrations, `application.yaml`, a REST
 controller, `docker-compose`, and a README.
 
+## Install
+
+This plugin is distributed through the marketplace defined at the root of this repo
+(`.claude-plugin/marketplace.json`). From inside [Claude Code](https://claude.com/claude-code):
+
+```
+/plugin marketplace add progmodEK/flow-driven-domain
+/plugin install fdd@flow-driven-domain-marketplace
+```
+
 ## Skill
 
 | Skill | Trigger |

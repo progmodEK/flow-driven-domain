@@ -13,6 +13,10 @@ and separate process rules classes from your aggregate class and invariants.<br>
 >
 > Prerequisite: **JAVA 17** or higher
 
+> 🤖 **If you are using an AI agent (ex: Claude Code)** This repo ships an **`fdd` skill** that scaffolds a
+> complete, runnable FDD Spring Boot app from a plain-English process description.
+> Jump to [🤖 Generate an FDD app with AI](#-generate-an-fdd-app-with-ai-claude-code).
+
 <br>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -20,6 +24,7 @@ and separate process rules classes from your aggregate class and invariants.<br>
 📚 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Introduction](#-introduction)
+- [Generate an FDD app with AI (Claude Code)](#-generate-an-fdd-app-with-ai-claude-code)
 - [Hello World ex as tutorial](#-hello-world-ex-as-tutorial)
   - [Step1 - library dependency](#-step1---library-dependency)
   - [Step2 - Action, States and flow.json](#-step2---action-states-and-flowjson)
@@ -66,6 +71,47 @@ When using flow-driven-domain, your domain becomes more process-centric:
 
 Please read the [hello world](#hello-world-ex-as-tutorial) as tutorial.
 Then try a complete POC application [here](order-preparation-poc/README.md)
+
+## 🤖 Generate an FDD app with AI (Claude Code)
+
+You don't have to wire up an FDD app by hand. This repo is also a **[Claude Code](https://claude.com/claude-code)
+plugin marketplace** that exposes an **`fdd` skill**: describe your business process in plain English
+and it designs the states / actions / transitions, writes the workflow JSON, and generates the full,
+runnable project — build files (Gradle **or** Maven), the `Flowable`/`BaseFlow` domain, action
+delegates, `FlowEngine` wiring, Flyway migrations, `application.yaml`, a REST controller,
+`docker-compose`, and a README.
+
+### Install
+
+From inside Claude Code:
+
+```
+/plugin marketplace add progmodEK/flow-driven-domain
+/plugin install fdd@flow-driven-domain-marketplace
+```
+
+### Use
+
+Either invoke it explicitly with `/fdd` or just describe the process — the skill triggers on requests
+like *"make an FDD app"*, *"scaffold a flow-driven-domain service"*, or plain descriptions of a
+workflow:
+
+```
+/fdd Build me a leave-approval app. An employee requests time off, then their
+     manager reviews it and either approves or rejects it. If the manager hasn't
+     decided within 48 hours, escalate the request to HR.
+```
+
+The skill asks for anything it needs (build tool, package name, DB), then writes the whole module.
+
+### See it in action
+
+[`checkout-poc-fdd-skill/`](checkout-poc-fdd-skill/README.md) is a demo module that was **generated
+entirely by the `fdd` skill** — a good reference for the shape of the output.
+
+> 📖 Full skill details, triggers and reference docs live in
+> [`plugins/fdd/README.md`](plugins/fdd/README.md) and
+> [`plugins/fdd/skills/fdd/SKILL.md`](plugins/fdd/skills/fdd/SKILL.md).
 
 ## 👋🌍 Hello World ex as tutorial
 
