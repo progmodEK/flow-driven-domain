@@ -1,6 +1,6 @@
 # Build layouts & files (Gradle / Maven × standalone / module)
 
-The FDD app's *framework* stack is fixed (`io.github.progmodek:flow:1.1.0`, Spring Boot 4.1.0,
+The FDD app's *framework* stack is fixed (`io.github.progmodek:flow:1.2.0`, Spring Boot 4.1.0,
 Java 25, Postgres, Flyway). Only the **build tooling and project layout** vary depending on where the
 skill is invoked. This file gives the detection rule, then the exact build files + wiring + verify
 command for each of the four layouts. Everything *outside* the build files (Java sources, resources,
@@ -62,7 +62,7 @@ dependency/plugin management for a root project). Lombok has no build plugin in 
     <dependency>
       <groupId>io.github.progmodek</groupId>
       <artifactId>flow</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -154,7 +154,7 @@ version "0.0.1-SNAPSHOT"
 repositories { mavenCentral() }
 
 dependencies {
-    implementation "io.github.progmodek:flow:1.1.0"        // Flow Driven Domain
+    implementation "io.github.progmodek:flow:1.2.0"        // Flow Driven Domain
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.postgresql:postgresql"
     // Spring Boot 4.0 moved Flyway autoconfig into spring-boot-flyway; flyway-core alone
@@ -220,7 +220,7 @@ manage Boot, import the BOM in the module's `dependencyManagement` as shown.
     <dependency>
       <groupId>io.github.progmodek</groupId>
       <artifactId>flow</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

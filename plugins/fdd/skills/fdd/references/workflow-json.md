@@ -73,6 +73,8 @@ Terminal/final states simply have `"transitions": []`.
   but bind to `Integer`, so `new DelegateException(1, ...)` matches `"001"`.
 - **`timer.sec > 0`** schedules a delayed `flow_task`; `sec == 0` schedules an instant one. This is
   how SYSTEM actions and timeouts fire. On leaving the state, a stale scheduled task is removed.
+  Timers are (re)scheduled each time a state is **entered**, and a successful transition back to the
+  same state enters it again — see "Timers and transitions that stay in their state" below.
 - **`internal: true`** keeps the same state (useful for repeatable actions like picking items in
   several calls before a branch finally moves the state forward).
 - **`dependsOn`** enforces ordering: the named action must have executed before this transition is
@@ -119,9 +121,41 @@ the first timeout out of the initial waiting state; every other SYSTEM timeout j
 `timer` and needs no `expiration` flag. It's a metadata hint for `expiresAt`, not a per-transition
 switch, so don't put it on more than one action.
 
+## Timers and transitions that stay in their state
+
+A successful transition that leads back to its own state — `"internal": true`, or a `result` entry
+naming the same state — **re-enters** that state: the engine reschedules every timer of the state
+that does not use `inherit`, counted again from now, the timer of the transition that just ran
+included (and a non-`inherit` expiration timer pushes `expiresAt` back). That is what an edit wants:
+each edit restarts the idle timeout. It is a trap for a timer meant to fire **once**:
+
+- a timer on an internal transition (a `"sec": 0` notify, a reminder) is rescheduled by its own
+  success, so it fires again and again, for ever;
+- each firing also restarts the state's other timers, so the expiry never comes.
+
+Give a once-only timer **its own state**: it fires, leaves, and the new state carries on without it.
+The new state repeats the edits and keeps the original expiry with `"inherit": true`:
+```jsonc
+{ "name": "DRAFT", "initial": true,
+  "transitions": [
+    { "action": "EDIT",   "internal": true },                       // pushes REMIND and EXPIRE back
+    { "action": "SUBMIT", "result": { "success": "SUBMITTED" } },
+    { "action": "REMIND", "result": { "success": "REMINDER_SENT" }, "timer": { "sec": 3600 } },
+    { "action": "EXPIRE", "result": { "success": "EXPIRED" },       "timer": { "sec": 86400 } } ] },
+{ "name": "REMINDER_SENT",
+  "transitions": [
+    { "action": "EDIT",   "internal": true },                       // no timer restarts here
+    { "action": "SUBMIT", "result": { "success": "SUBMITTED" } },
+    { "action": "EXPIRE", "result": { "success": "EXPIRED" },       "timer": { "inherit": true } } ] }
+```
+(`EXPIRE` is the `"expiration": true` action; `REMIND` and `EXPIRE` are SYSTEM.) It also keeps each
+step visible in the aggregate's `state`, rather than only in the action history, which holds the
+last 5 executions of each action.
+
 ## Design checklist before writing the JSON
 1. One `initial: true` state; all reachable states listed; terminal states have empty transitions.
 2. Every action referenced in a transition is declared in `actions` with a `delegate`.
 3. Each SYSTEM action's transition carries a `timer` (else it never fires).
 4. Branching transitions have a `result` map whose keys the delegate actually sets.
 5. Retry/exception targets are real states.
+6. No timer meant to fire once sits on a transition that returns to its own state (see above).

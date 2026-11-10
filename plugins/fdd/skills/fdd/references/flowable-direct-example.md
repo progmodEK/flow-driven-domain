@@ -62,7 +62,7 @@ java {
 repositories { mavenCentral() }
 
 dependencies {
-    implementation "io.github.progmodek:flow:1.1.0"        // Flow Driven Domain
+    implementation "io.github.progmodek:flow:1.2.0"        // Flow Driven Domain
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.postgresql:postgresql"
     // Spring Boot 4.0 split Flyway autoconfig into spring-boot-flyway; flyway-core alone is

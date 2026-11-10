@@ -1,9 +1,9 @@
-# FDD Library API Reference (non-reactive, `io.github.progmodek:flow:1.1.0`)
+# FDD Library API Reference (non-reactive, `io.github.progmodek:flow:1.2.0`)
 
 Everything a generated consumer app needs to know about the library's public surface.
 Package root throughout: `com.progmod.flow`. Stack: Spring Boot 4.1.0, Java 25 (bytecode 17
 compatible), Postgres. The library brings `flow-common` transitively (`api` dependency), so
-depending on `io.github.progmodek:flow:1.1.0` is enough.
+depending on `io.github.progmodek:flow:1.2.0` is enough.
 
 ## Exact imports (copy these — do NOT guess the packages)
 
@@ -43,7 +43,8 @@ import com.progmod.flow.infra.postgres.BasePostgresJsonRepository;
 import static com.progmod.flow.utils.FlowUtils.ACTION_TRANSITION_VARIABLE;   // == "transition"
 ```
 
-These are verified against the published `flow:1.1.0` jar and the reference POC. After generating,
+These are verified against the `flow` sources and the reference POC (no package moved between 1.1.0
+and 1.2.0; 1.2.0 only adds `com.progmod.flow.domain.port.TaskTenancy`, see §11). After generating,
 if `compileJava` reports `package ... does not exist`, it is almost always one of these — fix the
 import to the FQN above rather than adding a dependency.
 
@@ -58,6 +59,7 @@ import to the FQN above rather than adding a dependency.
 8. Auto-configuration, required annotations, `EventsPublisher`
 9. Required database tables
 10. Gotchas / rules that are easy to get wrong
+11. Optional (1.2.0): multi-tenant timers, driving the polling yourself
 
 ---
 
@@ -300,9 +302,10 @@ built-in convenience. The default persistence for generated apps is this Postgre
   Generated apps always include one working sample sink — the `LoggingEventPublisher` in the worked
   example — whose body is the single swap-point for a real destination (Kafka, HTTP, an outbox, ...).
 - Config props (all optional, sensible defaults) under `flow.*`:
-  `flow.actionLogger.enabled`, `flow.taskConsumer.scheduleMilli`, `flow.taskConsumer.batch`,
-  `flow.taskConsumer.concurrency`, `flow.lockService.lockTimeoutSec`,
-  `flow.lockService.removeBlockedLockScheduleMilli`.
+  `flow.actionLogger.enabled`, `flow.taskConsumer.enabled` (default `true`, since 1.2.0, see §11),
+  `flow.taskConsumer.scheduleMilli` (default 1000), `flow.taskConsumer.batch` (100),
+  `flow.taskConsumer.concurrency` (5), `flow.lockService.lockTimeoutSec` (180),
+  `flow.lockService.removeBlockedLockScheduleMilli` (10000).
 
 ---
 
@@ -329,7 +332,8 @@ CREATE TABLE IF NOT EXISTS <schema>.flow_task (
 );
 ```
 The `id` column type matches the aggregate's id type: `uuid` for Flowable-direct with UUID ids,
-`varchar` for BaseFlow (String ids). Flyway runs automatically on startup.
+`varchar` for BaseFlow (String ids). Flyway runs automatically on startup. `flow_task` keeps exactly
+these four columns unless the app declares a `TaskTenancy` (§11), which needs one more, nullable.
 
 ---
 
@@ -349,3 +353,49 @@ The `id` column type matches the aggregate's id type: `uuid` for Flowable-direct
   `<key>` matches a `result` map key; otherwise the engine assumes `"success"`.
 - **`expiration` action + `expiresAt`:** mark the timeout action with `"expiration": true` so the
   engine computes an `expiresAt` on states that can time out.
+
+---
+
+## 11. Optional (1.2.0): multi-tenant timers, driving the polling yourself
+
+Generate these **only when the user asks** (several tenants/businesses/customers sharing one app and
+database; or tests/an own scheduler that must fire timers on demand). The two are independent and
+combine freely. Without them the engine behaves exactly as 1.1.0.
+
+**Multi-tenant timers — the `TaskTenancy` port** (`com.progmod.flow.domain.port.TaskTenancy`). Declare
+one bean:
+```java
+public interface TaskTenancy {
+  default String column() { return "tenant_id"; }    // column of flow_task holding the tenant
+  Object currentTenant();                             // tenant bound now; null when none
+  void runAs(Object tenant, Runnable task);           // run one task with its tenant bound
+}
+```
+- When the engine schedules a timer, it writes `currentTenant()` into that column (read on the thread
+  that applied the action, or inside `runAs` for a timer scheduled by a timer action). One poll then
+  reads the due tasks of every tenant at once, and the consumer runs each through `runAs(tenant, task)`
+  on its own thread: bind the tenant there (thread-local, scoped value, a session variable...) and open
+  a transaction if the app wants one. `tenant` is the column value as JDBC returns it (`UUID` for a
+  `uuid` column, `String` for `varchar`, `Long` for `bigint`).
+- A task with a null tenant runs as is. If `runAs` throws (unknown tenant, refused commit), that task
+  is flagged `BLOCKED`; the others and the lock are unaffected.
+- The app adds the column to its own `flow_task` migration, **nullable** (the global polling-lock row
+  `LOCK` has no tenant), with the type of its tenant id:
+  ```sql
+  CREATE TABLE IF NOT EXISTS <schema>.flow_task (
+    id varchar NOT NULL, score int8 NOT NULL, status varchar NOT NULL, ver int4 NOT NULL,
+    tenant_id <uuid|varchar|bigint>,                 -- nullable; name = TaskTenancy.column()
+    CONSTRAINT flow_task_pk PRIMARY KEY (id)
+  );
+  ```
+  `column()` must be a plain SQL identifier (validated at startup).
+- Works whatever isolates tenants (a tenant column on the aggregate table, Postgres row-level security,
+  nothing). With row-level security, put **no policy on `flow_task`**: the poll and the lock run with no
+  tenant bound and would see nothing.
+
+**Driving the polling yourself** — `flow.taskConsumer.enabled: false`. The engine then starts no
+polling thread; the app calls `flowEngine.executeDueTasks()` to run the due tasks once, synchronously,
+for every tenant (a test that wants a timer to fire now; an app-owned scheduler). It takes the same
+global lock, so it does nothing if another instance holds it. It runs what is due now: it does not
+bring a future timer forward (a `"sec": 0` timer is due at once). Keep `@EnableScheduling` either way
+(the stale-lock cleaner still runs on it).

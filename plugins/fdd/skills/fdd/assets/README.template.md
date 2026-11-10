@@ -1,7 +1,7 @@
 # {{APP_TITLE}}
 
 A process-centric Spring Boot application built with the **flow-driven-domain (FDD)** library
-(`io.github.progmodek:flow:1.1.0`). {{ONE_LINE_DESCRIPTION}}
+(`io.github.progmodek:flow:1.2.0`). {{ONE_LINE_DESCRIPTION}}
 
 Mode: **{{MODE}}** (Flowable-direct / BaseFlow) · Java 25 · Spring Boot 4.1.0 · Postgres (jsonb).
 

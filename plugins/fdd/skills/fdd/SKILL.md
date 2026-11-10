@@ -22,7 +22,7 @@ library. FDD turns a domain into a *process-centric* one: actions/states/transit
 a workflow JSON, a `FlowEngine` drives the process, and flow history is persisted with the aggregate.
 
 Your job: take the user's process description, **design the state machine**, confirm it, then emit a
-full project that compiles and runs. The *framework* stack is fixed: `io.github.progmodek:flow:1.1.0`,
+full project that compiles and runs. The *framework* stack is fixed: `io.github.progmodek:flow:1.2.0`,
 Spring Boot 4.1.0, Java 25, Postgres (jsonb), Flyway. The *build tooling*, however, **adapts to where
 the skill is invoked** — a new module inside the caller's existing Gradle/Maven build, or a standalone
 project — so read `references/build-files.md` and pick the layout in Step 4 before writing any build
@@ -183,6 +183,10 @@ These come from `fdd-api.md` §10 — check them in the generated output:
   enums; terminal states have `"transitions": []`.
 - **Every SYSTEM action's transition carries a `timer`** — that's how the engine fires it. No
   endpoint is generated for SYSTEM actions.
+- **No once-only timer on a transition that stays in its state** (`internal`, or a `result` naming
+  the same state): its success re-enters the state and reschedules the state's timers, its own
+  included, so it fires for ever. Give it a state of its own (`workflow-json.md`, "Timers and
+  transitions that stay in their state").
 - **`flow_task` table is always created** in the migration (any timer/retry needs it).
 - **Branching transitions**: the delegate calls `actionContext.put(ACTION_TRANSITION_VARIABLE, key)`
   with a key present in the transition's `result` map; single-outcome transitions use
@@ -196,8 +200,12 @@ These come from `fdd-api.md` §10 — check them in the generated output:
 
 - Keep delegates thin: process wiring + a call into aggregate behaviour. Business invariants belong
   on the aggregate (Flowable-direct) or as explicit checks in the delegate (BaseFlow).
-- The published README documents version `1.0.1`; the current library is **1.1.0** — always generate
-  `1.1.0`.
+- The current library is **1.2.0** — always generate `1.2.0`, whatever version a README snippet shows.
+  1.2.0 is a drop-in upgrade of 1.1.0 (no code, config or schema change).
+- **Optional features, only when the user asks for them** (`fdd-api.md` §11): multi-tenant timers via a
+  `TaskTenancy` bean plus a nullable tenant column on `flow_task`, and `flow.taskConsumer.enabled: false`
+  to drive polling yourself with `FlowEngine.executeDueTasks()` (e.g. a test that fires a timer now).
+  A default generated app uses neither: no `TaskTenancy` bean, the 4-column `flow_task`, polling on.
 - If the user wants a persistence approach other than Postgres jsonb (JPA/Spring Data), any
   `FlowRepository<T,ID>` bean works — but the default and recommended path is
   `BasePostgresJsonRepository`.
